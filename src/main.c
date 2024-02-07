@@ -4,6 +4,11 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 
+#include "pico/stdlib.h"
+#include "hardware/pio.h"
+#include "hardware/clocks.h"
+#include "ws2812.pio.h"
+
 #define LED_PIN         25
 
 int main() {
