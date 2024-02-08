@@ -9,6 +9,8 @@
 #define LED_PIN         25
 
 int main() {
+    int i;
+
     stdio_init_all();
 
     // Delay with some LED blinking on startup
@@ -23,14 +25,17 @@ int main() {
 
     setup_ws2812();
 
+
     while(1) {
-        gpio_put(LED_PIN, 1);
-        sleep_ms(100);
-        gpio_put(LED_PIN, 0);
-        
-        put_pixel(urgb_u32(0xff, 0, 0));  // Red
-        sleep_ms(500);
-        put_30_pixels(urgb_u32(0, 0xff, 0));
+        for (i=0; i<0xff; i++) {
+            put_30_pixels(urgb_u32(i, 0xff, 0xff));
+        }
+        for (i=0; i<0xff; i++) {
+            put_30_pixels(urgb_u32(0xff, i, 0xff));
+        }
+        for (i=0; i<0xff; i++) {
+            put_30_pixels(urgb_u32(0xff, 0xff, i));
+        }
     } 
 
     return 1;
