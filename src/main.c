@@ -4,10 +4,7 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 
-#include "pico/stdlib.h"
-#include "hardware/pio.h"
-#include "hardware/clocks.h"
-#include "ws2812.pio.h"
+#include "neopixels.h"
 
 #define LED_PIN         25
 
@@ -23,6 +20,21 @@ int main() {
         sleep_ms(500);
         gpio_put(LED_PIN, 0);
     }
+
+    setup_ws2812();
+
+    while(1) {
+        gpio_put(LED_PIN, 1);
+        sleep_ms(100);
+        gpio_put(LED_PIN, 0);
+        
+        put_pixel(urgb_u32(0xff, 0, 0));  // Red
+        sleep_ms(500);
+        put_pixel(urgb_u32(0, 0xff, 0));  // Green
+        sleep_ms(500);
+        put_pixel(urgb_u32(0, 0, 0xff));  // Blue
+        sleep_ms(500);
+    } 
 
     return 1;
 }
