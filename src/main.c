@@ -15,9 +15,9 @@ int main() {
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
     for (int i = 0; i < 5; i++) {
-        sleep_ms(500);
+        sleep_ms(100);
         gpio_put(LED_PIN, 1);
-        sleep_ms(500);
+        sleep_ms(100);
         gpio_put(LED_PIN, 0);
     }
 
@@ -30,10 +30,7 @@ int main() {
         
         put_pixel(urgb_u32(0xff, 0, 0));  // Red
         sleep_ms(500);
-        put_pixel(urgb_u32(0, 0xff, 0));  // Green
-        sleep_ms(500);
-        put_pixel(urgb_u32(0, 0, 0xff));  // Blue
-        sleep_ms(500);
+        put_30_pixels(urgb_u32(0, 0xff, 0));
     } 
 
     return 1;
