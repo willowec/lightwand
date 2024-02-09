@@ -47,13 +47,15 @@ static inline void put_30_pixels(uint32_t pixel_grb) {
 
     // wait for the tx fifo to drain
     while (!pio_sm_is_tx_fifo_empty(pio0, 0))
+        sleep_us(1);
 
     /*
     The ws2812 datasheet indicates that 50us must be waited between each set of transmissions. However, I found that for
-    my use case 100us were needed. A possible explanation is that when pio_sm_is_tx_fifo_empty() returns false, the last 32-bit
-    message is still being transmitted over the data line. Whatever the case, this works!
+    my use case 200us were needed. A possible explanation is that when pio_sm_is_tx_fifo_empty() returns false, the last 32-bit
+    message is still being transmitted over the data line. Whatever the case, this works, and we don't need the wand to flicker
+    particularly fast anyway 
     */
-    sleep_us(100);    
+    sleep_us(200);    
 }
 
 // taken from hutscape.github.io. Converts r, g, b, to urgb
