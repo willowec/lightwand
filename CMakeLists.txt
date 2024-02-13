@@ -18,8 +18,10 @@ pico_sdk_init()
 include_directories("src" "inc")
 add_executable(${PROJECT_NAME} 
 	src/main.c
-  src/neopixels.c
   inc/neopixels.h
+  src/neopixels.c
+  inc/ADXL343.h
+  src/ADXL343.c  
 )
 
 # add the ws2812 library
@@ -32,6 +34,7 @@ pico_set_program_version(${PROJECT_NAME} "0.1")
 target_link_libraries(${PROJECT_NAME}
   pico_stdlib
   hardware_pio
+  hardware_i2c
 )
 
 # enable usb communication

@@ -25,17 +25,10 @@ int main() {
 
     setup_ws2812();
 
+    put_30_pixels(urgb_u32(0x0f, 0xbf, 0x0f));
 
     while(1) {
-        for (i=0; i<0xff; i++) {
-            put_30_pixels(urgb_u32(i, 0xff, 0xff));
-        }
-        for (i=0; i<0xff; i++) {
-            put_30_pixels(urgb_u32(0xff, i, 0xff));
-        }
-        for (i=0; i<0xff; i++) {
-            put_30_pixels(urgb_u32(0xff, 0xff, i));
-        }
+
     } 
 
     return 1;
