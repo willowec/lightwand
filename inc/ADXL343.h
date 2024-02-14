@@ -43,7 +43,7 @@ https://github.com/adafruit/Adafruit_ADXL343/blob/master/Adafruit_ADXL343.h
 // adxl343 struct
 typedef struct adxl343_struct {
     uint8_t address;
-    i2c_inst_t* i2c;
+    i2c_inst_t *i2c;
 } adxl343;
 
 

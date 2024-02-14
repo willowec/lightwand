@@ -10,8 +10,8 @@
 
 #define LED_PIN         25
 
-#define ACCEL_SDA_PIN   18
-#define ACCEL_SCL_PIN   19
+#define ACCEL_SDA_PIN   16
+#define ACCEL_SCL_PIN   17
 
 int main() {
     int i;
@@ -31,7 +31,7 @@ int main() {
     // initialize the acceleromter
     printf("Seting up accel\n");
     adxl343 acceleromter;
-    adxl343_setup(&acceleromter, i2c1, ADXL343_DEFAULT_ADDRESS, ACCEL_SDA_PIN, ACCEL_SCL_PIN);
+    adxl343_setup(&acceleromter, i2c0, ACCEL_SDA_PIN, ACCEL_SCL_PIN, ADXL343_DEFAULT_ADDRESS);
 
     // initialize the LED strip
     setup_ws2812();

@@ -41,7 +41,9 @@ void adxl343_write_register(adxl343 *accelerometer, uint8_t reg, uint8_t value)
 void adxl343_read_register_8(adxl343 *accelerometer, uint8_t reg, uint8_t *out_val)
 {
     buffer[0] = reg;
+    printf("writing\n");
     i2c_write_blocking(accelerometer->i2c, accelerometer->address, buffer, 1, true);
+    printf("reading\n");
     i2c_read_blocking(accelerometer->i2c, accelerometer->address, out_val, 1, false);
 }
 
