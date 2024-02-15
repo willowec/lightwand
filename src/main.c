@@ -14,7 +14,7 @@
 #define ACCEL_SCL_PIN   17
 
 int main() {
-    int i;
+    int i, err;
 
     stdio_init_all();
 
@@ -37,8 +37,20 @@ int main() {
     setup_ws2812();
     put_30_pixels(urgb_u32(0x0f, 0xbf, 0x0f));
 
-    while(1) {
+    int16_t x, y, z;
 
+    while(1) {
+        err = adxl343_getx(&acceleromter, &x);
+        if (err < 0)
+            printf("ERROR!!! %d\n", err);
+        err = adxl343_gety(&acceleromter, &y);
+        if (err < 0)
+            printf("ERROR!!! %d\n", err);
+        err = adxl343_getz(&acceleromter, &z);
+        if (err < 0)
+            printf("ERROR!!! %d\n", err);
+
+        printf("\tx: %d\ty: %d\tz: %d\n", x, y, z);
     } 
 
     return 1;

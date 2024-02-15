@@ -40,6 +40,8 @@ https://github.com/adafruit/Adafruit_ADXL343/blob/master/Adafruit_ADXL343.h
 #define ADXL3XX_REG_FIFO_CTL        (0x38)  /**< FIFO control */
 #define ADXL3XX_REG_FIFO_STATUS     (0x39)  /**< FIFO status */
 
+#define ADXL343_I2C_TIMEOUT_US  5 * 1000 * 1000 // 5 second timeout
+
 // adxl343 struct
 typedef struct adxl343_struct {
     uint8_t address;
@@ -50,35 +52,41 @@ typedef struct adxl343_struct {
 /*
 Sets up the i2c used to communicate to the adxl343, and configures
 the device for usage
+
+Returns:
+    PICO_ERROR_NONE: success
+    PICO_ERROR_TIMEOUT: i2c communications timed out
+    PICO_ERROR_GENERIC: adxl343 did not respond with the expected device ID of 0xe5
+
 */
-void adxl343_setup(adxl343 *accelerometer, i2c_inst_t *i2c, uint8_t SDA_pin, uint8_t SCL_pin, uint8_t address);
+int adxl343_setup(adxl343 *accelerometer, i2c_inst_t *i2c, uint8_t SDA_pin, uint8_t SCL_pin, uint8_t address);
 
 /*
-Writes a register on the adxl343
+Writes a register on the adxl343. Returns i2c errors if encountered
 */
-void adxl343_write_register(adxl343 *accelerometer, uint8_t reg, uint8_t value);
+int adxl343_write_register(adxl343 *accelerometer, uint8_t reg, uint8_t value);
 
 /*
-Reads 8 bits from a register on the adxl343
+Reads 8 bits from a register on the adxl343. Returns i2c errors if encountered
 */
-void adxl343_read_register_8(adxl343 *accelerometer, uint8_t reg, uint8_t *out_val);
+int adxl343_read_register_8(adxl343 *accelerometer, uint8_t reg, uint8_t *out_val);
 
 /*
-Reads 16 bits from a register on the adxl343
+Reads 16 bits from a register on the adxl343. Returns i2c errors if encountered
 */
-void adxl343_read_register_16(adxl343 *accelerometer, uint8_t reg, int16_t *out_val);
+int adxl343_read_register_16(adxl343 *accelerometer, uint8_t reg, int16_t *out_val);
 
 /*
 Gets the most recent x axis value
 */
-int16_t adxl343_getx(adxl343 *accelerometer);
+int adxl343_getx(adxl343 *accelerometer, int16_t *out_val);
 
 /*
 Gets the most recent y axis value
 */
-int16_t adxl343_gety(adxl343 *accelerometer);
+int adxl343_gety(adxl343 *accelerometer, int16_t *out_val);
 
 /*
 Gets the most recent z axis value
 */
-int16_t adxl343_getz(adxl343 *accelerometer);
+int adxl343_getz(adxl343 *accelerometer, int16_t *out_val);
