@@ -38,8 +38,10 @@ int main() {
     put_30_pixels(urgb_u32(0x0f, 0xbf, 0x0f));
 
     int16_t x, y, z;
+    uint8_t r, g, b;
 
     while(1) {
+        // print out the readings
         err = adxl343_getx(&acceleromter, &x);
         if (err < 0)
             printf("ERROR!!! %d\n", err);
@@ -50,7 +52,16 @@ int main() {
         if (err < 0)
             printf("ERROR!!! %d\n", err);
 
-        printf("\tx: %d\ty: %d\tz: %d\n", x, y, z);
+
+        r = abs(x) / 2;
+        g = abs(y) / 2;
+        b = abs(z) / 2;
+
+        // convert to rgb
+        put_30_pixels(urgb_u32(r, g, b));
+
+        printf("\tx: %d\ty: %d\tz: %d\t\tr: %2x\tg: %2x\tb: %2x\n", x, y, z, r, g, b);
+
     } 
 
     return 1;

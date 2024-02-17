@@ -32,6 +32,11 @@ int adxl343_setup(adxl343 *accelerometer, i2c_inst_t *i2c, uint8_t SDA_pin, uint
     if (devid != 0xe5) 
         return PICO_ERROR_GENERIC;
 
+    // select 16G range, 10-bit measurements: 0b0000 0011 (0x03)
+    err = adxl343_write_register(accelerometer, ADXL3XX_REG_DATA_FORMAT, 0x01);
+    if (err < 0) 
+        return err;
+
     // enable measurements
     err = adxl343_write_register(accelerometer, ADXL3XX_REG_POWER_CTL, 0x08);
     if (err < 0) 
