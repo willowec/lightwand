@@ -37,8 +37,10 @@ int main() {
     setup_ws2812();
     put_30_pixels(urgb_u32(0x0f, 0xbf, 0x0f));
 
-    int16_t x, y, z;
-    uint8_t r, g, b;
+    int16_t x, y, z;    // z is the horizontal axis in this config
+
+    uint64_t prev_time = time_us_64();
+    double position = 0;
 
     while(1) {
         // print out the readings
@@ -52,16 +54,28 @@ int main() {
         if (err < 0)
             printf("ERROR!!! %d\n", err);
 
+        // printf("\tx: %d\ty: %d\tz: %d\n", x, y, z);
 
-        r = abs(x) / 2;
-        g = abs(y) / 2;
-        b = abs(z) / 2;
+        // only pay atttention to movements above 1G
+        if (abs(z) <= 32) z = 0;
+
+        // update position
+        uint64_t now = time_us_64();
+        double delta = ((double)(now - prev_time) / 1000000.0f);
+        position = position + z * delta * 4;
+
+        if (position >=  127) position =  127;
+        if (position <= -127) position = -127;
+
+        uint8_t color = (int)position + 128;
+
+        printf("col: %d, z: %d\tpos: %f\n", color, z, position);
 
         // convert to rgb
-        put_30_pixels(urgb_u32(r, g, b));
+        put_30_pixels(urgb_u32(color, 255 - color, 0));
 
-        printf("\tx: %d\ty: %d\tz: %d\t\tr: %2x\tg: %2x\tb: %2x\n", x, y, z, r, g, b);
-
+        
+        prev_time = now;
     } 
 
     return 1;

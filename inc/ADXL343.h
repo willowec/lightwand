@@ -40,7 +40,12 @@ https://github.com/adafruit/Adafruit_ADXL343/blob/master/Adafruit_ADXL343.h
 #define ADXL3XX_REG_FIFO_CTL        (0x38)  /**< FIFO control */
 #define ADXL3XX_REG_FIFO_STATUS     (0x39)  /**< FIFO status */
 
-#define ADXL343_I2C_TIMEOUT_US  5 * 1000 * 1000 // 5 second timeout
+#define ADXL3XX_RANGE_2G            (0x00)
+#define ADXL3XX_RANGE_4G            (0x01)
+#define ADXL3XX_RANGE_8G            (0x02)
+#define ADXL3XX_RANGE_16G           (0x03)
+
+#define ADXL343_I2C_TIMEOUT_US  5 * 1000 * 1000 // 5 second timeout      
 
 // adxl343 struct
 typedef struct adxl343_struct {
