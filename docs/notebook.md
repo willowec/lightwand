@@ -33,7 +33,7 @@ Lets look at the PAM2423 ([Datasheet](https://www.mouser.com/datasheet/2/115/PAM
 
 Using these values, we get $I_{OUT(max)} = 2.28A$, which is within spec!
 
-The datasheet recommends the use of the SS34 Schotkey diode. However, I would prefer to prototype with a through-hole component. The [1N5820](https://www.mccsemi.com/pdf/Products/1N5820-1N5822(DO-201AD).pdf) looks like a good choice, with $V_f = .475V$, 3A current, and a reverse breakdown voltage of 20V. 
+The datasheet recommends the use of the SS34 Schotkey diode. However, I would prefer to prototype with a through-hole component. The [31DQ05](https://www.smc-diodes.com/propdf/31DQ05(06)%20N0691%20REV.A.pdf) has a Vf of 0.55V and can handle 3A, which is plenty for this application.
 
 As for the inductor, the recommended value seems good. However, we need it to have a higher current rating than the maximum switching current of 5.5A. The [SBC6-6R8-662](https://www.digikey.com/en/products/detail/kemet/SBC6-6R8-662/5819291) satisfies this with a current rating of 6.6A
 
