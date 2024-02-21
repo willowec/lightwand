@@ -51,3 +51,14 @@ Page 22 of the datasheet contains a typical circuit example. Other than resistor
  - [S-82K1BAM-I6T1U](https://www.digikey.com/en/products/detail/ablic-inc/S-82K1BAM-I6T1U/15996683) protection IC
  - 2N7000 transistor (have on hand)
  - passive components (have on hand)
+
+## 2024/02/21
+
+### Calculations for acquiring the position of the wand in space using the accelerometer
+
+In order to accurately see how far the wand has moved, there are two options as far as I can tell:
+
+1. Calculate the Jerk of the device, and then integrate up to position. This would mean that as long as the accelerometer is not moving at all in physical space, it will not detect movement in digital space. However, it seems likely that this method will accumulate innacuracies rapidly. This can be solved by resetting the wand with a button before waving, or resetting when no motion is detected.
+2. Instead of calculating position in 3D space, only measure distance from origin as a magnitude. In this way, gravity could be subtracted from the acceleration as a scalar to eliminate it from the equation. This may even be more useful for our purposes, as it simplifies the user experience greatly.
+
+it would be prudent to try both.

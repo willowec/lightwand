@@ -35,28 +35,9 @@ int main() {
     put_30_pixels(urgb_u32(0x0f, 0xbf, 0x0f));
 
     while(1) {
-        /*
+        update_transform(trans);
 
-        // update position
-        uint64_t now = time_us_64();
-        double delta = ((double)(now - prev_time) / 1000000.0f);
-
-        // Calculate the velocity of the wand by taking the derivative of the acceleration
-        double velocity = (double)(z - prev_accel) * delta;
-        position = position + velocity * 255 * 10;
-
-        if (position >=  127) position =  127;
-        if (position <= -127) position = -127;
-
-        uint8_t color = (int)position + 128;
-
-        printf("col: %d, z: %d\tpos: %f\n", color, z, position);
-
-        // convert to rgb
-        put_30_pixels(urgb_u32(color, 255 - color, 0));
-
-        */
-
+        //printf("%f\t%f\t%f\t\n", trans->x, trans->y, trans->z);
     } 
 
     return 1;

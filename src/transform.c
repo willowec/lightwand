@@ -9,9 +9,8 @@
 
 void initialize_transform(transform *trans)
 {
-    printf("inttin\n");
     adxl343_setup(&trans->accelerometer, i2c0, ACCEL_SDA_PIN, ACCEL_SCL_PIN, ADXL343_DEFAULT_ADDRESS);
-    printf("adx initted\n");
+    reset_transform(trans);
 }
 
 
@@ -41,6 +40,29 @@ void update_transform(transform *trans)
     jy = (double)(ay_raw - trans->prev_ay_raw) * ADXL3XXVAL_TO_MSS * delta_time_s;
     jz = (double)(az_raw - trans->prev_az_raw) * ADXL3XXVAL_TO_MSS * delta_time_s;
 
+    printf("%f \t%f \t%f\n", jx, jy, jz);
+
+    // update accel
+    trans->ax += jx;
+    trans->ay += jy;
+    trans->az += jz;
+
+    // update vel
+    trans->vx += trans->ax;
+    trans->vy += trans->ay;
+    trans->vz += trans->az;
+
+    // update pos
+    trans->x += trans->vx;
+    trans->y += trans->vy;
+    trans->z += trans->vz;
+
+    // update previous values
+    trans->prev_calc_time_us = now_us;
+    trans->prev_ax_raw = ax_raw;
+    trans->prev_ay_raw = ay_raw;
+    trans->prev_az_raw = az_raw;
+
 }
 
 
@@ -54,9 +76,13 @@ void reset_transform(transform *trans)
     trans->vy = 0;
     trans->vz = 0;
 
-    trans->prev_adxl343_x_reading = 0;
-    trans->prev_adxl343_y_reading = 0;
-    trans->prev_adxl343_z_reading = 0;
+    trans->ax = 0;
+    trans->ay = 0;
+    trans->az = 0;
+
+    trans->prev_ax_raw = 0;
+    trans->prev_ay_raw = 0;
+    trans->prev_az_raw = 0;
 
     trans->prev_calc_time_us = 0;
 }
