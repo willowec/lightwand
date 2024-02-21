@@ -1,3 +1,6 @@
+#ifndef ADXL343H
+#define ADXL343H
+
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
@@ -40,10 +43,28 @@ https://github.com/adafruit/Adafruit_ADXL343/blob/master/Adafruit_ADXL343.h
 #define ADXL3XX_REG_FIFO_CTL        (0x38)  /**< FIFO control */
 #define ADXL3XX_REG_FIFO_STATUS     (0x39)  /**< FIFO status */
 
+// Various G force range options for the ADXL3XX (Used in the ADXL3XX_REG_DATA_FORMAT register)
 #define ADXL3XX_RANGE_2G            (0x00)
 #define ADXL3XX_RANGE_4G            (0x01)
 #define ADXL3XX_RANGE_8G            (0x02)
 #define ADXL3XX_RANGE_16G           (0x03)
+
+// The selected range for the ADXL343
+#define SELECTED_ADXL3XX_RANGE      ADXL3XX_RANGE_16G   
+
+// Conversion constant for converting ADXL343 values to acceleration in m/s/s
+#if SELECTED_ADXL3XX_RANGE == ADXL3XX_RANGE_2G
+#define ADXL3XXVAL_TO_MSS   1.0 / 255.0 * 19.6133 
+#endif
+#if SELECTED_ADXL3XX_RANGE == ADXL3XX_RANGE_4G
+#define ADXL3XXVAL_TO_MSS   1.0 / 255.0 * 39.2266
+#endif
+#if SELECTED_ADXL3XX_RANGE == ADXL3XX_RANGE_8G
+#define ADXL3XXVAL_TO_MSS   1.0 / 255.0 * 78.4532
+#endif
+#if SELECTED_ADXL3XX_RANGE == ADXL3XX_RANGE_16G
+#define ADXL3XXVAL_TO_MSS   1.0 / 255.0 * 156.9064
+#endif
 
 #define ADXL343_I2C_TIMEOUT_US  5 * 1000 * 1000 // 5 second timeout      
 
@@ -95,3 +116,6 @@ int adxl343_gety(adxl343 *accelerometer, int16_t *out_val);
 Gets the most recent z axis value
 */
 int adxl343_getz(adxl343 *accelerometer, int16_t *out_val);
+
+
+#endif

@@ -1,3 +1,9 @@
+/*
+Functions for controlling neopixel arrays
+*/
+#ifndef NEOPIXEL
+#define NEOPIXEL
+
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
@@ -68,3 +74,4 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
 // sets up the ws2812 controller
 void setup_ws2812();
 
+#endif

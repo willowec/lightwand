@@ -22,6 +22,8 @@ add_executable(${PROJECT_NAME}
   src/neopixels.c
   inc/ADXL343.h
   src/ADXL343.c  
+  inc/transform.h
+  src/transform.c
 )
 
 # add the ws2812 library

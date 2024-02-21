@@ -32,8 +32,8 @@ int adxl343_setup(adxl343 *accelerometer, i2c_inst_t *i2c, uint8_t SDA_pin, uint
     if (devid != 0xe5) 
         return PICO_ERROR_GENERIC;
 
-    // select 16G range, 10-bit measurements: 0b0000 0011 (0x03)
-    err = adxl343_write_register(accelerometer, ADXL3XX_REG_DATA_FORMAT, ADXL3XX_RANGE_16G);
+    // select the G-force range, 10-bit measurements: 0b0000 00xx
+    err = adxl343_write_register(accelerometer, ADXL3XX_REG_DATA_FORMAT, SELECTED_ADXL3XX_RANGE);
     if (err < 0) 
         return err;
 
