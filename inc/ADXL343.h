@@ -54,16 +54,20 @@ https://github.com/adafruit/Adafruit_ADXL343/blob/master/Adafruit_ADXL343.h
 
 // Conversion constant for converting ADXL343 values to acceleration in m/s/s
 #if SELECTED_ADXL3XX_RANGE == ADXL3XX_RANGE_2G
-#define ADXL3XXVAL_TO_MSS   1.0 / 255.0 * 19.6133 
+#define ADXL3XXVAL_TO_MSS   1.0 / 511.0 * 19.6133 
+#define ADXL3XXVAL_1G       256
 #endif
 #if SELECTED_ADXL3XX_RANGE == ADXL3XX_RANGE_4G
-#define ADXL3XXVAL_TO_MSS   1.0 / 255.0 * 39.2266
+#define ADXL3XXVAL_TO_MSS   1.0 / 511.0 * 39.2266
+#define ADXL3XXVAL_1G       128
 #endif
 #if SELECTED_ADXL3XX_RANGE == ADXL3XX_RANGE_8G
-#define ADXL3XXVAL_TO_MSS   1.0 / 255.0 * 78.4532
+#define ADXL3XXVAL_TO_MSS   1.0 / 511.0 * 78.4532
+#define ADXL3XXVAL_1G       64
 #endif
 #if SELECTED_ADXL3XX_RANGE == ADXL3XX_RANGE_16G
-#define ADXL3XXVAL_TO_MSS   1.0 / 255.0 * 156.9064
+#define ADXL3XXVAL_TO_MSS   1.0 / 511.0 * 156.9064
+#define ADXL3XXVAL_1G       32
 #endif
 
 #define ADXL343_I2C_TIMEOUT_US  5 * 1000 * 1000 // 5 second timeout      
