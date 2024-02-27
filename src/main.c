@@ -14,7 +14,8 @@
 #define ADX_SDA_PIN     16
 #define ADX_SCL_PIN     17
 
-#define ACCELERATION_THRESH_MSS     0.5
+#define ACCEL_MAX_MSS           10
+#define DIRECTION_TIMEOUT_US    1000000
 
 int main() {
     int i, err;
@@ -39,39 +40,45 @@ int main() {
     setup_ws2812();
     put_30_pixels(urgb_u32(0x0f, 0xbf, 0x0f));
 
-    uint64_t prev_time_us = time_us_64();
     
-    int16_t ax_raw, ay_raw, az_raw;
-    int dir = 0;
-    double delta, velocity, acceleration, position = 0;
+    int16_t az_raw;
+    double accel_mss;
+    int dir = 0;    // what direction is the wand moving in
+
+    uint64_t last_moved_time_us = 0;
 
     while(1) {
-        // calculate delta time
-        uint64_t now = time_us_64();
-        delta = (double)(now - prev_time_us) / 1000000.0;
-
-        // update raw adx readings
-        adxl343_getx(&accelerometer, &ax_raw); 
-        adxl343_gety(&accelerometer, &ay_raw);
+        // update raw adx reading
         adxl343_getz(&accelerometer, &az_raw);
 
-        // calculate the magnitude of the acceleration, excluding gravity. Ignore small values
-        acceleration = sqrt((double)pow(ax_raw, 2) + (double)pow(ay_raw, 2) + (double)pow(az_raw, 2));
-        acceleration = (acceleration - ADXL3XXVAL_1G) * ADXL3XXVAL_TO_MSS;
-        if (acceleration < ACCELERATION_THRESH_MSS) acceleration = 0.0; 
+        // update "direction" of stick
+        accel_mss = (double)az_raw * ADXL3XXVAL_TO_MSS;
 
-        // Find whether the wand is accelerating into positive z or negative z
-        if (az_raw > 0) dir =  1;
-        else            dir = -1;
+        if (accel_mss < -ACCEL_MAX_MSS) {
+            last_moved_time_us = time_us_64();
+            dir = -1;
+        }
+        if (accel_mss >  ACCEL_MAX_MSS) {
+            last_moved_time_us = time_us_64();
+            dir =  1;
+        }
 
-        // update "position" of the wand using magnitude acceleration and direction of z acceleration
-        velocity = velocity + acceleration * dir * delta;
-        position = position + velocity * delta;
+        // if the wand has not changed direction in a while, assume it has stopped moving
+        if (last_moved_time_us < (time_us_64() - DIRECTION_TIMEOUT_US)) dir = 0;
 
-        printf("%d\t%d\t%d\t%f\t%f\t%f\t%f\n", ax_raw, ay_raw, az_raw, acceleration, velocity, position, delta);
-
-        // set the previous time
-        prev_time_us = now;
+        // change color of stick based on position
+        if (dir < 0) {
+            // stick is moving to the left with reference to the user
+            put_30_pixels(urgb_u32(0xff, 0x00, 0x00));
+        }
+        else if (dir > 0) {
+            // stick is moving to the right with reference to the user
+            put_30_pixels(urgb_u32(0x00, 0xff, 0x00));
+        }
+        else {
+            // stick is assumed to be not moving
+            put_30_pixels(urgb_u32(0x00, 0x00, 0xff));
+        }
     } 
 
     return 1;
