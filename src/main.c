@@ -17,14 +17,15 @@
 
 // defines relating to wand position
 #define ACCEL_MAX_MSS           10
-#define DIRECTION_TIMEOUT_US    1000 * 1000
+#define DIRECTION_TIMEOUT_US    1000 * 100
 
 // defines relating to text display
-#define COL_SHOW_TIME_US        1000 * 10
+#define COL_SHOW_TIME_US        1000 * 3
 
 
 // choose the message to display on the wand
-#define MESSAGE_LEN     3
+#define MESSAGE_LEN             3
+#define MESSAGE_LEN_COLUMNS     MESSAGE_LEN * CHAR_WIDTH
 const uint32_t *message[MESSAGE_LEN] = {CHAR_E, CHAR_C, CHAR_E};
 
 int main() {
@@ -48,7 +49,7 @@ int main() {
 
     // initialize the LED strip
     setup_ws2812();
-    put_30_pixels(0xf101, urgb_u32(0x0f, 0xbf, 0x0f), urgb_u32(0xbf, 0x0f, 0x0f));
+    put_30_pixels_on(urgb_u32(0x0f, 0xbf, 0x0f));
 
     // variables relating to wand position
     int16_t az_raw;
@@ -58,9 +59,11 @@ int main() {
 
     // variables relating to the text message
     uint64_t last_changed_col_time_us = 0;
-    int message_index = 0;
+    int message_index = -1;
 
     while(1) {
+        uint64_t now = time_us_64();
+
         // update raw adx reading
         adxl343_getz(&accelerometer, &az_raw);
 
@@ -69,22 +72,40 @@ int main() {
 
         // update "direction" of stick when the acceleration changes suddenly
         if (accel_mss < -ACCEL_MAX_MSS) {
-            last_moved_time_us = time_us_64();
+            last_moved_time_us = now;
             dir = -1;
+
+            if (message_index == -1) 
+                message_index = MESSAGE_LEN_COLUMNS - 1;
         }
-        if (accel_mss >  ACCEL_MAX_MSS) {
-            last_moved_time_us = time_us_64();
+        else if (accel_mss >  ACCEL_MAX_MSS) {
+            last_moved_time_us = now;
             dir =  1;
+            
+            if (message_index == -1) 
+                message_index = 0;
+        }
+        else if (last_moved_time_us < (now - DIRECTION_TIMEOUT_US)) {
+            // if the wand has not 'changed direction' in a while, assume it has stopped moving
+            dir = 0;
+            message_index = -1;
+            put_30_pixels_on(urgb_u32(0, 0, 0));
         }
 
-        // if the wand has not 'changed direction' in a while, assume it has stopped moving
-        if (last_moved_time_us < (time_us_64() - DIRECTION_TIMEOUT_US)) dir = 0;
 
+        // scroll through the columns of the characters of the message
+        if ((last_changed_col_time_us + COL_SHOW_TIME_US < now) && message_index != -1) {
+            message_index = message_index + dir;
+            if (message_index > MESSAGE_LEN_COLUMNS - 1) message_index = 0;
+            if (message_index < 0) message_index = MESSAGE_LEN_COLUMNS -1;
+            last_changed_col_time_us = now;
 
-        // move through the columns of the characters of the message
+            printf("moving to col %d\n", message_index);
 
+            put_30_pixels(message[message_index/CHAR_WIDTH][message_index % CHAR_WIDTH], urgb_u32(0x0f, 0xbf, 0x0f), urgb_u32(0, 0, 0));
+        }
 
-        // 
+        
         /*
         // change color of stick based on position
         if (dir < 0) {
