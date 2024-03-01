@@ -48,7 +48,7 @@ int main() {
 
     // initialize the LED strip
     setup_ws2812();
-    put_30_pixels(urgb_u32(0x0f, 0xbf, 0x0f));
+    put_30_pixels(0xf101, urgb_u32(0x0f, 0xbf, 0x0f), urgb_u32(0xbf, 0x0f, 0x0f));
 
     // variables relating to wand position
     int16_t az_raw;
@@ -89,15 +89,15 @@ int main() {
         // change color of stick based on position
         if (dir < 0) {
             // stick is moving to the left with reference to the user
-            put_30_pixels(urgb_u32(0xff, 0x00, 0x00));
+            put_30_pixels_on(urgb_u32(0xff, 0x00, 0x00));
         }
         else if (dir > 0) {
             // stick is moving to the right with reference to the user
-            put_30_pixels(urgb_u32(0x00, 0xff, 0x00));
+            put_30_pixels_on(urgb_u32(0x00, 0xff, 0x00));
         }
         else {
             // stick is assumed to be not moving
-            put_30_pixels(urgb_u32(0x00, 0x00, 0xff));
+            put_30_pixels_on(urgb_u32(0x00, 0x00, 0xff));
         }
         */
     } 
