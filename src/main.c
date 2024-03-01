@@ -8,14 +8,24 @@
 
 #include "neopixels.h"
 #include "ADXL343.h"
+#include "alphabet.h"
 
+// gpio pin defines
 #define LED_PIN         25
-
 #define ADX_SDA_PIN     16
 #define ADX_SCL_PIN     17
 
+// defines relating to wand position
 #define ACCEL_MAX_MSS           10
-#define DIRECTION_TIMEOUT_US    1000000
+#define DIRECTION_TIMEOUT_US    1000 * 1000
+
+// defines relating to text display
+#define COL_SHOW_TIME_US        1000 * 10
+
+
+// choose the message to display on the wand
+#define MESSAGE_LEN     3
+const uint32_t *message[MESSAGE_LEN] = {CHAR_E, CHAR_C, CHAR_E};
 
 int main() {
     int i, err;
@@ -40,20 +50,24 @@ int main() {
     setup_ws2812();
     put_30_pixels(urgb_u32(0x0f, 0xbf, 0x0f));
 
-    
+    // variables relating to wand position
     int16_t az_raw;
     double accel_mss;
     int dir = 0;    // what direction is the wand moving in
-
     uint64_t last_moved_time_us = 0;
+
+    // variables relating to the text message
+    uint64_t last_changed_col_time_us = 0;
+    int message_index = 0;
 
     while(1) {
         // update raw adx reading
         adxl343_getz(&accelerometer, &az_raw);
 
-        // update "direction" of stick
+        // convert to acceleration in meters/s^2
         accel_mss = (double)az_raw * ADXL3XXVAL_TO_MSS;
 
+        // update "direction" of stick when the acceleration changes suddenly
         if (accel_mss < -ACCEL_MAX_MSS) {
             last_moved_time_us = time_us_64();
             dir = -1;
@@ -63,9 +77,15 @@ int main() {
             dir =  1;
         }
 
-        // if the wand has not changed direction in a while, assume it has stopped moving
+        // if the wand has not 'changed direction' in a while, assume it has stopped moving
         if (last_moved_time_us < (time_us_64() - DIRECTION_TIMEOUT_US)) dir = 0;
 
+
+        // move through the columns of the characters of the message
+
+
+        // 
+        /*
         // change color of stick based on position
         if (dir < 0) {
             // stick is moving to the left with reference to the user
@@ -79,6 +99,7 @@ int main() {
             // stick is assumed to be not moving
             put_30_pixels(urgb_u32(0x00, 0x00, 0xff));
         }
+        */
     } 
 
     return 1;
