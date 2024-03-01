@@ -93,6 +93,8 @@ int main() {
         }
 
 
+        // TODO: Revise indexing so that letters are not shown backwards
+
         // scroll through the columns of the characters of the message
         if ((last_changed_col_time_us + COL_SHOW_TIME_US < now) && message_index != -1) {
             message_index = message_index + dir;

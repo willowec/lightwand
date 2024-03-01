@@ -68,3 +68,22 @@ it would be prudent to try both.
 Both versions of the software have been attempted now, and while not bothering with 3D space proved to be closer to a reasonable result, it is still wildly innacurate and off-base. Perhaps it would be better to use the accelerometer simply to detect when the wand is being moved, and wether it is being moved left or right, and then display the text at a hard-coded speed. That seems to be what most Persistance of Vision wands do, anyway. [This hackaday project](https://hackaday.com/2018/08/31/max1000-tutorial-is-quite-persistent/) only bothers to detect the max G's that occur when you switch direction.
 
 [The POV Staff](https://github.com/shurik179/povstaff) seems like it might be a bit more sophisticated. From the user guide, "As soon as rotation speed is high enough, the staff will begin showing your first image, one line at a time, and will continue doing that as long as you are twirling the staff. It will adjust the interval between successive lines depending on the rotation speed, to keep the image ratio close to original regardless of how fast you are rotating the staff". They use the LSM6DS33, which is a 3-axis gyro + 3-axis accelerometer. The gyroscope is also how they find the rotational speed of the staff, and since it is fairly expensive I think this is more or less off the table for now.
+
+## 2024/03/01
+
+When waved at extreme speeds, the wand can now display about onen character at a time in the afterimage. This is not what we are really going for. We need at least three characters to be displayed simultaneously. In order to reach this goal, we need to make it easier to wave the wand at high speeds. Some possible changes:
+
+1. The wand is too long. We can either
+	1. Buy denser neopixel strips and make the wand shorter. 
+		+: Higher quality product. 
+		-: expensive, ~$10 more per unit
+	2. Use fewer neopixels per wand.						 
+		+: Materials on hand, much cheaper, longer battery life. 
+		-: lower quality product
+2. The wand is too heavy (currently mounted on a 2x4 more than a meter long). We can
+	1. Use a lighter material		
+		-: After trying extremely light discarded fiberglass rods, while speed increased control decreased
+		-: having a stick this long waved at high speeds is simply dangerous
+	2. Make it shorter (see above) 
+
+From this little set of bullet points, it would seem that the best course of action is to reduce the wand from 30 pixels to 15 pixels. This would reduce the unit price, make them much easier to use (less tiring on the arms), increase their battery life, make them safer, etc etc.
