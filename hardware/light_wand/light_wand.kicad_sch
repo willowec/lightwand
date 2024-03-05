@@ -1,0 +1,31 @@
+(kicad_sch (version 20230121) (generator eeschema)
+
+  (uuid 1490551a-2c24-45df-b317-45d6c7f84af9)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (sheet (at 71.12 66.04) (size 33.02 27.94) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 1ba98658-464e-4305-848f-5f718e928d99)
+    (property "Sheetname" "Power Supply" (at 71.12 65.3284 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "power_supply.kicad_sch" (at 71.12 94.5646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "light_wand"
+        (path "/1490551a-2c24-45df-b317-45d6c7f84af9" (page "2"))
+      )
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+  )
+)

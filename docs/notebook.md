@@ -87,3 +87,21 @@ When waved at extreme speeds, the wand can now display about onen character at a
 	2. Make it shorter (see above) 
 
 From this little set of bullet points, it would seem that the best course of action is to reduce the wand from 30 pixels to 15 pixels. This would reduce the unit price, make them much easier to use (less tiring on the arms), increase their battery life, make them safer, etc etc.
+
+## 2024/03/04
+
+### Software issue
+
+After trying to proto-board a 15 pixel version, I have encountered a frustrating issue - communicating to the ADXL343 appears to always result in a timeout. I have tried using a different ADXL343 on a breadboard, and a different Pico on the breadboard. The problem persists. It is difficult to ascertain what has caused this issue - if I had damanged the pico, or damaged the ADXL343, then swapping both out should have fixed it. And yet, there are few other ways to explain the timeout. Perhaps both ADXL343's were damaged?
+
+### Power Supply circuit schematic
+
+Began drawing out the power supply in KiKad. From the PAM2423 datasheet, the output voltage of the boost converter is set by resistors on the feedback path following this equation:
+
+$$R_1 = R_2 * (\frac{V_{OUT}}{1.262} - 1)$$
+
+In their example schematic, both $R_1$ and $R_2$ are on the order of 10k - 100k, so we will follow suit here. As $V_f$ of our shottky diode is 0.55V typical, we want $V_{OUT} = 5.55$. After some trial and error, it was found that with $R_1 = 15k\Omega$ and $R_2 = 51k\Omega$, the output of the boost converter would be $V_{OUT} = 5.5528V$, and after the boost converter a voltage of $V_{SYS} = 5.0028V$ would be supplied to the rest of the circuit.
+
+
+
+
