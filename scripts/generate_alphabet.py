@@ -2,16 +2,53 @@
 #   representation of characters for the light wand to display
 
 from pathlib import Path
-from glob import glob
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 import numpy as np
+import argparse
 
 SOURCE_DIR = Path("./alphabet_source")
-CHAR_WIDTH = 21
-CHAR_HEIGHT = 30
+CHAR_WIDTH = 11
+CHAR_HEIGHT = 15
 
+ALPHABET = {
+    'A': 'A',
+    'B': 'B',
+    'C': 'C',
+    'D': 'D',
+    'E': 'E',
+    'F': 'F',
+    'G': 'G',
+    'H': 'H',
+    'I': 'I',
+    'J': 'J',
+    'K': 'K',
+    'L': 'L',
+    'M': 'M',
+    'N': 'N',
+    'O': 'O',
+    'P': 'P',
+    'Q': 'Q',
+    'R': 'R',
+    'S': 'S',
+    'T': 'T',
+    'U': 'U',
+    'V': 'V',
+    'W': 'W',
+    'X': 'X',
+    'Y': 'Y',
+    'Z': 'Z',
+    'BANG': '!',
+    'QUESTION': '?',
+    'PERIOD': '.',
+    'COMMA': ',',
+}
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('font_path', type=Path, help="Path to the true type font (.tff) font to generate the light wand font from")
+
+    args = parser.parse_args()
+
     print("Generating alphabet...")
 
     generated_c = """
@@ -29,32 +66,34 @@ The lowest pixel on the wand is the LSB
     generated_c += "#include <stdint.h>\n\n"
     generated_c += f"#define\tCHAR_WIDTH\t{CHAR_WIDTH}\n#define\tCHAR_HEIGHT\t{CHAR_HEIGHT}\n\n"
 
-    # get all pngs in SOURCE_DIR and generate a C array for that character
-    for image in glob("*.png", root_dir=SOURCE_DIR):
-        char_name = "CHAR_" + str(image).split('.')[0].upper()
-        print(f"    Generating {char_name} from {image}")
+    for char_name in list(ALPHABET.keys()):
+        image = Image.new('L', size=(CHAR_WIDTH, CHAR_HEIGHT))
+        draw = ImageDraw.Draw(image)
 
+        font = ImageFont.truetype(str(args.font_path), 18)
+        draw.text((2, -2), ALPHABET[char_name], font=font, fill=255)
 
-        # open the image as an image
-        with Image.open(SOURCE_DIR.joinpath(image)) as im:
-            # convert the image to a grayscale array of ones and zeroes.
-            imarray = np.asarray(im.convert('L')) / 255
+        # convert the image to a grayscale array of ones and zeroes.
+        imarray = np.asarray(image) / 255
+        imarray = np.around(imarray, decimals=0)
+
+        print(imarray)
             
-            # now extract the vertical columns of the image and turn them into 32-bit bitfields
-            integers = np.zeros(CHAR_WIDTH, dtype="uint32")
-            for col in range(CHAR_WIDTH):
-                column = imarray[:, col]
+        # now extract the vertical columns of the image and turn them into 32-bit bitfields
+        integers = np.zeros(CHAR_WIDTH, dtype="uint32")
+        for col in range(CHAR_WIDTH):
+            column = imarray[:, col]
 
-                for i, bit in enumerate(column):
-                    integers[col] = integers[col] | ((not int(bit)) << i)
+            for i, bit in enumerate(column):
+                integers[col] = integers[col] | ((not int(bit)) << i)
 
-            generated_c += f"const uint32_t {char_name}[CHAR_WIDTH]\t= "
-            generated_c += "{"
-            for i in integers:
-                generated_c += f"0x{i:08x},"
+        generated_c += f"const uint32_t CHAR_{char_name}[CHAR_WIDTH]\t= "
+        generated_c += "{"
+        for i in integers:
+            generated_c += f"0x{i:08x},"
 
-            generated_c = generated_c[:-1]
-            generated_c = generated_c + "};\n"
+        generated_c = generated_c[:-1]
+        generated_c = generated_c + "};\n"
 
     print("Copy and paste the following code into alphabet.h:")
     print()
