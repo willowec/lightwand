@@ -27,10 +27,14 @@ int adxl343_setup(adxl343 *accelerometer, i2c_inst_t *i2c, uint8_t SDA_pin, uint
     // Confirm the device ID is correct
     uint8_t devid;
     err = adxl343_read_register_8(accelerometer, ADXL3XX_REG_DEVID, &devid);
-    if (err < 0) 
+    if (err < 0) {
+        printf("Returning error\n");
         return err;
-    if (devid != 0xe5) 
+    }
+    if (devid != 0xe5) {
+        printf("Wrong devid\n"); 
         return PICO_ERROR_GENERIC;
+    }
 
     // select the G-force range, 10-bit measurements: 0b0000 00xx
     err = adxl343_write_register(accelerometer, ADXL3XX_REG_DATA_FORMAT, SELECTED_ADXL3XX_RANGE);

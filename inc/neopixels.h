@@ -11,8 +11,8 @@ Functions for controlling neopixel arrays
 
 #include <stdio.h>
 
-// lights up a full 30 pixel (1m) neopixel strip as one color
-static inline void put_30_pixels_on(uint32_t pixel_grb) {
+// lights up a full 15 pixel neopixel strip as one color
+static inline void put_15_pixels_on(uint32_t pixel_grb) {
     /*
     pio_sm_put_blocking will always put out 32 bits, but we want to send 24 bit chunks in a
     continuous stream. Therefore, some slightly more complicated looping behaviour is required
@@ -36,8 +36,8 @@ static inline void put_30_pixels_on(uint32_t pixel_grb) {
         // transmit the next 32-bit chunk of control data
         pio_sm_put_blocking(pio0, 0, msg);
 
-        if (transmitted_bytes >= 90) {
-            // 90 bytes of color data, for 30 pixels, have been transmitted
+        if (transmitted_bytes >= 45) {
+            // 45 bytes of color data, for 15 pixels, have been transmitted
             break;
         }
     }
@@ -56,7 +56,7 @@ static inline void put_30_pixels_on(uint32_t pixel_grb) {
 }
 
 // parses the bits of a 32 bit integer and turns leds on or off based on the bits
-static inline void put_30_pixels(uint32_t bits, uint32_t color_on, uint32_t color_off)
+static inline void put_15_pixels(uint32_t bits, uint32_t color_on, uint32_t color_off)
 {
     int color_channel = 0; // 0: green, 1: red, 2: blue
     int transmitted_bytes = 0;
@@ -82,8 +82,8 @@ static inline void put_30_pixels(uint32_t bits, uint32_t color_on, uint32_t colo
         // transmit the next 32-bit chunk of control data
         pio_sm_put_blocking(pio0, 0, msg);
 
-        if (transmitted_bytes >= 90) {
-            // 90 bytes of color data, for 30 pixels, have been transmitted
+        if (transmitted_bytes >= 45) {
+            // 45 bytes of color data, for 15 pixels, have been transmitted
             break;
         }
     }

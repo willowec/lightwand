@@ -45,11 +45,14 @@ int main() {
 
     // initialize the accelerometer
     adxl343 accelerometer;
-    adxl343_setup(&accelerometer, i2c0, ADX_SDA_PIN, ADX_SCL_PIN, ADXL343_DEFAULT_ADDRESS);
+    err = adxl343_setup(&accelerometer, i2c0, ADX_SDA_PIN, ADX_SCL_PIN, ADXL343_DEFAULT_ADDRESS);
+    if (err < 0) {
+        printf("ADXL343 Setup failed... error %d\n", err);
+    }
 
     // initialize the LED strip
     setup_ws2812();
-    put_30_pixels_on(urgb_u32(0x0f, 0xbf, 0x0f));
+    put_15_pixels_on(urgb_u32(0x0f, 0xbf, 0x0f));
 
     // variables relating to wand position
     int16_t az_raw;
@@ -66,6 +69,8 @@ int main() {
 
         // update raw adx reading
         adxl343_getz(&accelerometer, &az_raw);
+
+        printf("Raw z: %d\n", az_raw);
 
         // convert to acceleration in meters/s^2
         accel_mss = (double)az_raw * ADXL3XXVAL_TO_MSS;
@@ -89,7 +94,7 @@ int main() {
             // if the wand has not 'changed direction' in a while, assume it has stopped moving
             dir = 0;
             message_index = -1;
-            put_30_pixels_on(urgb_u32(0, 0, 0));
+            put_15_pixels_on(urgb_u32(0xff, 0, 0));
         }
 
 
@@ -104,7 +109,7 @@ int main() {
 
             printf("moving to col %d\n", message_index);
 
-            put_30_pixels(message[message_index/CHAR_WIDTH][message_index % CHAR_WIDTH], urgb_u32(0x0f, 0xbf, 0x0f), urgb_u32(0, 0, 0));
+            put_15_pixels(message[message_index/CHAR_WIDTH][message_index % CHAR_WIDTH], urgb_u32(0x0f, 0xbf, 0x0f), urgb_u32(0, 0, 0));
         }
 
         
