@@ -16,11 +16,11 @@
 #define ADX_SCL_PIN     17
 
 // defines relating to wand position
-#define ACCEL_MAX_MSS           10
+#define ACCEL_MAX_MSS           40
 #define DIRECTION_TIMEOUT_US    1000 * 100
 
 // defines relating to text display
-#define COL_SHOW_TIME_US        1000 * 3
+#define COL_SHOW_TIME_US        1000 * 4
 
 
 // choose the message to display on the wand
@@ -70,8 +70,6 @@ int main() {
         // update raw adx reading
         adxl343_getz(&accelerometer, &az_raw);
 
-        printf("Raw z: %d\n", az_raw);
-
         // convert to acceleration in meters/s^2
         accel_mss = (double)az_raw * ADXL3XXVAL_TO_MSS;
 
@@ -80,6 +78,8 @@ int main() {
             last_moved_time_us = now;
             dir = -1;
 
+            put_15_pixels_on(urgb_u32(0xff, 0xff, 0));
+
             if (message_index == -1) 
                 message_index = MESSAGE_LEN_COLUMNS - 1;
         }
@@ -87,6 +87,8 @@ int main() {
             last_moved_time_us = now;
             dir =  1;
             
+            put_15_pixels_on(urgb_u32(0xff, 0, 0xff));
+
             if (message_index == -1) 
                 message_index = 0;
         }
@@ -99,7 +101,7 @@ int main() {
 
 
         // TODO: Revise indexing so that letters are not shown backwards
-
+        /*
         // scroll through the columns of the characters of the message
         if ((last_changed_col_time_us + COL_SHOW_TIME_US < now) && message_index != -1) {
             message_index = message_index + dir;
@@ -111,7 +113,7 @@ int main() {
 
             put_15_pixels(message[message_index/CHAR_WIDTH][message_index % CHAR_WIDTH], urgb_u32(0x0f, 0xbf, 0x0f), urgb_u32(0, 0, 0));
         }
-
+        */
  
     } 
 
