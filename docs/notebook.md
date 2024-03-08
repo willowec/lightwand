@@ -108,6 +108,29 @@ In their example schematic, both $R_1$ and $R_2$ are on the order of 10k - 100k,
 
 (it was a hardware issue). The ADXL343 placed on the protoboard has not been salvaged yet, but the issuw was the spare was simply a bad solder connection between Vin and the rest of the board.
 
+## 20204/03/08
 
+### Testing the Boost Converter
 
+The boost converter circuit was constructed and tested following the below schematic:
 
+![KiCad circuit schematic of the boost converter](./notebook_imgs/boost_conv_ckt.jpg)
+
+A photo of the constructed circuit is shown below:
+
+![Constructed boost converter](./notebook_imgs/boost_conv_constructed.jpg)
+
+At no point during testing were any of the components hot to touch. 
+
+The results are as follows:
+
+ - $V_{in} = 4.20V$: $V_{out}$ = 5.38V
+ - $V_{in} = 4.00V$: $V_{out}$ = 5.38V
+ - $V_{in} = 3.80V$: $V_{out}$ = 5.38V
+ - $V_{in} = 3.60V$: $V_{out}$ = 5.38V
+ - $V_{in} = 3.40V$: $V_{out}$ = 5.37V
+ - $V_{in} = 3.20V$: $V_{out}$ = 5.08V
+ - $V_{in} = 3.00V$: $V_{out}$ = 4.57V
+ - $V_{in} = 2.80V$: $V_{out}$ = 3.97V
+
+This indicates that the boost converter will be more or less unable to support the circuit at around 3Vin - 3.2Vin. The RPi Pico should be alright with an upper $V_{in}$ of 5.38V as the datasheet claims it can run off 1.8V to 5.5V.
