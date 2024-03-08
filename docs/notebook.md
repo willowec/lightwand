@@ -134,3 +134,7 @@ The results are as follows:
  - $V_{in} = 2.80V$: $V_{out}$ = 3.97V
 
 This indicates that the boost converter will be more or less unable to support the circuit at around 3Vin - 3.2Vin. The RPi Pico should be alright with an upper $V_{in}$ of 5.38V as the datasheet claims it can run off 1.8V to 5.5V.
+
+### Wand Rebuild
+
+The wand has been rebuilt in its 15 LED form on a light, flexible fiberglass rod. This allows it to be waved much faster and more easily than previously. However, the results are still extremely unsatisfactory. In a well lit room, the POV effect is not strong enough for onlookers to make out what is being spelled. The same goes for video recordings of the effect. It still needs to be tested in a dark room, however.

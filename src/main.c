@@ -70,7 +70,6 @@ int main() {
         // update raw adx reading
         adxl343_getz(&accelerometer, &az_raw);
 
-
         // convert to acceleration in meters/s^2
         accel_mss = (double)az_raw * ADXL3XXVAL_TO_MSS;
 
