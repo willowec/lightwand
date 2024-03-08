@@ -20,13 +20,13 @@
 #define DIRECTION_TIMEOUT_US    1000 * 100
 
 // defines relating to text display
-#define COL_SHOW_TIME_US        1000 * 4
+#define COL_SHOW_TIME_US        1000 * 3
 
 
 // choose the message to display on the wand
 #define MESSAGE_LEN             3
 #define MESSAGE_LEN_COLUMNS     MESSAGE_LEN * CHAR_WIDTH
-const uint32_t *message[MESSAGE_LEN] = {CHAR_E, CHAR_C, CHAR_E};
+const uint32_t *message[MESSAGE_LEN] = {CHAR_A, CHAR_B, CHAR_C};
 
 int main() {
     int i, err;
@@ -70,6 +70,7 @@ int main() {
         // update raw adx reading
         adxl343_getz(&accelerometer, &az_raw);
 
+
         // convert to acceleration in meters/s^2
         accel_mss = (double)az_raw * ADXL3XXVAL_TO_MSS;
 
@@ -78,8 +79,6 @@ int main() {
             last_moved_time_us = now;
             dir = -1;
 
-            put_15_pixels_on(urgb_u32(0xff, 0xff, 0));
-
             if (message_index == -1) 
                 message_index = MESSAGE_LEN_COLUMNS - 1;
         }
@@ -87,8 +86,6 @@ int main() {
             last_moved_time_us = now;
             dir =  1;
             
-            put_15_pixels_on(urgb_u32(0xff, 0, 0xff));
-
             if (message_index == -1) 
                 message_index = 0;
         }
@@ -99,9 +96,6 @@ int main() {
             put_15_pixels_on(urgb_u32(0xff, 0, 0));
         }
 
-
-        // TODO: Revise indexing so that letters are not shown backwards
-        /*
         // scroll through the columns of the characters of the message
         if ((last_changed_col_time_us + COL_SHOW_TIME_US < now) && message_index != -1) {
             message_index = message_index + dir;
@@ -113,7 +107,7 @@ int main() {
 
             put_15_pixels(message[message_index/CHAR_WIDTH][message_index % CHAR_WIDTH], urgb_u32(0x0f, 0xbf, 0x0f), urgb_u32(0, 0, 0));
         }
-        */
+        
  
     } 
 
