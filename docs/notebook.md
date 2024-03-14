@@ -108,7 +108,7 @@ In their example schematic, both $R_1$ and $R_2$ are on the order of 10k - 100k,
 
 (it was a hardware issue). The ADXL343 placed on the protoboard has not been salvaged yet, but the issuw was the spare was simply a bad solder connection between Vin and the rest of the board.
 
-## 20204/03/08
+## 2024/03/08
 
 ### Testing the Boost Converter
 
@@ -138,3 +138,31 @@ This indicates that the boost converter will be more or less unable to support t
 ### Wand Rebuild
 
 The wand has been rebuilt in its 15 LED form on a light, flexible fiberglass rod. This allows it to be waved much faster and more easily than previously. However, the results are still extremely unsatisfactory. In a well lit room, the POV effect is not strong enough for onlookers to make out what is being spelled. The same goes for video recordings of the effect. It still needs to be tested in a dark room, however.
+
+## 2024/03/09
+
+### Component Selection for the S-82K1B battery protection IC
+
+On the S-82K1BAM-I6T1U datasheet, page 22, an example is shown. In the example, two N-Channel MOSFETs are used: One for overvoltage circuit disconnect, one for undervoltage circuit disconnect. Additionally, there are three resistors. R1 forms a low-pass filter with C1 across the battery and VDD and VSS terminals of the the chip. R3 connects VSS and INI on the chip, and R2 connects VM to the minus rail of the output.
+
+#### R1 (Power fluctuation prot.)
+
+The datasheet recommends a typical value of $330\Omega$, which we will use
+
+#### C1 (Power fluctuation prot.)
+
+The datasheet recommends a typical value of $0.1\mu F$, which we will use
+
+#### R2 (Reverse voltage prot.)
+
+The datasheet recommends a typical value of $470\Omega$, which we will use
+
+#### R3 (Overcurrent detection)
+
+The datasheet does not explain the value selection for this component, but recommends a typical value of $1.5m\Omega$. On digikey, such resistors are under a dollar each. 
+
+#### MOSFETS
+
+According to the datasheet, the MOSFETS should have a threshold voltage that is less than or equal to the overdischarge protection voltage. We are using the S-82K1BAM-I6T1U, which has an overdischarge detection voltage of 2.300V.
+
+The [SI3900DV-T1-E3](https://www.digikey.com/en/products/detail/vishay-siliconix/SI3900DV-T1-E3/1656399) ([datasheet](ttps://www.vishay.com/docs/71178/si3900dv.pdf)) seems like a good choice for the mosfets. Relatively hand solderable at 1mm pitch, $0.7 a piece, with $V_{GS(th)} = 0.6V$ to $1.5V$. In worst case conditions they can handle continuous $I_{DS} = 1.8A$, and since only 15 LEDS are being used at this stage of the design, that is more than enough current capacity.

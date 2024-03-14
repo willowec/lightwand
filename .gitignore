@@ -2,6 +2,10 @@ build
 .vscode
 dev_tests
 
+# ignore the generated BOMs
+light_wand.csv
+light_wand.xml
+
 # KiCad gitignore from https://github.com/github/gitignore/blob/main/KiCad.gitignore
 *.000
 *.bak
@@ -17,3 +21,4 @@ _autosave-*
 *-save.pro
 *-save.kicad_pcb
 fp-info-cache
+\#auto_saved_files#
