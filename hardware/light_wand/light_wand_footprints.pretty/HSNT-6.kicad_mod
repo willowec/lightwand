@@ -1,5 +1,6 @@
 (footprint "HSNT-6" (version 20221018) (generator pcbnew)
   (layer "F.Cu")
+  (descr "Footprint for the S-82K1B chip")
   (attr smd)
   (fp_text reference "REF**" (at 0.4 3.14 unlocked) (layer "F.SilkS")
       (effects (font (size 1 1) (thickness 0.1)))

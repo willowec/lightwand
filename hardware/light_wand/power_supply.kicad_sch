@@ -1318,7 +1318,7 @@
     (property "Value" "~" (at 167.64 62.23 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "Package_SO:SOP-8_3.9x4.9mm_P1.27mm" (at 167.64 62.23 0)
+    (property "Footprint" "light_wand_footprints:SOP-8-EP_3.9x4.9mm_P1.27mm" (at 167.64 62.23 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/410/PAM2421%2C22%2C23.pdf" (at 167.64 62.23 0)
