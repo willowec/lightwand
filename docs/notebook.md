@@ -166,3 +166,26 @@ The datasheet does not explain the value selection for this component, but recom
 According to the datasheet, the MOSFETS should have a threshold voltage that is less than or equal to the overdischarge protection voltage. We are using the S-82K1BAM-I6T1U, which has an overdischarge detection voltage of 2.300V.
 
 The [SI3900DV-T1-E3](https://www.digikey.com/en/products/detail/vishay-siliconix/SI3900DV-T1-E3/1656399) ([datasheet](ttps://www.vishay.com/docs/71178/si3900dv.pdf)) seems like a good choice for the mosfets. Relatively hand solderable at 1mm pitch, $0.7 a piece, with $V_{GS(th)} = 0.6V$ to $1.5V$. In worst case conditions they can handle continuous $I_{DS} = 1.8A$, and since only 15 LEDS are being used at this stage of the design, that is more than enough current capacity.
+
+## 2024/03/18
+
+### PCB - Pico or RP2040?
+
+There is a decision to be made on whether the rpi pico should be soldered directly onto the PCB, or whether an RP2040 should be pick-and-placed onto the PCB instead.
+
+#### Hand soldering the pico:
+ - ~$5
+ - larger space requirement
+ - hand solderable
+ - convenient
+
+#### Pick-and-place assembly and RP2040:
+ - pick-and-place would already be helpful for the battery protection IC and other small components
+ - would result in a smaller, more professional final design
+ - may be cheaper
+
+#### Decision
+
+In order to reduce complexity of the design, avoiding potential unexpected roadblocks, the RPi pico will be soldered directly on the board. The battery protection IC can be stenciled on using tweezers and solder paste.
+
+[This helpful KiCad library](https://github.com/ncarandini/KiCad-RP-Pico) for the Pico will be used in the PCB layout. 
