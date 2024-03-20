@@ -43,17 +43,18 @@ int main() {
         gpio_put(LED_PIN, 0);
     }
 
+    printf("Starting...\n");
     // initialize the accelerometer
     adxl343 accelerometer;
     err = adxl343_setup(&accelerometer, i2c0, ADX_SDA_PIN, ADX_SCL_PIN, ADXL343_DEFAULT_ADDRESS);
     if (err < 0) {
         printf("ADXL343 Setup failed... error %d\n", err);
     }
-
+    printf("Accelerometer setuo complete...\n");  
     // initialize the LED strip
     setup_ws2812();
     put_15_pixels_on(urgb_u32(0x0f, 0xbf, 0x0f));
-
+    printf("LED's lit green\n");
     // variables relating to wand position
     int16_t az_raw;
     double accel_mss;
@@ -65,6 +66,10 @@ int main() {
     int message_index = -1;
 
     while(1) {
+        printf("Main loop.\n");
+        put_15_pixels_on(urgb_u32(0xfe, 0xfe, 0xfe));
+        sleep_ms(200);
+        /*
         uint64_t now = time_us_64();
 
         // update raw adx reading
@@ -107,7 +112,7 @@ int main() {
             put_15_pixels(message[message_index/CHAR_WIDTH][message_index % CHAR_WIDTH], urgb_u32(0x0f, 0xbf, 0x0f), urgb_u32(0, 0, 0));
         }
         
- 
+        */
     } 
 
     return 1;

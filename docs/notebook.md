@@ -189,3 +189,54 @@ There is a decision to be made on whether the rpi pico should be soldered direct
 In order to reduce complexity of the design, avoiding potential unexpected roadblocks, the RPi pico will be soldered directly on the board. The battery protection IC can be stenciled on using tweezers and solder paste.
 
 [This helpful KiCad library](https://github.com/ncarandini/KiCad-RP-Pico) for the Pico will be used in the PCB layout. 
+
+## 2024/03/19
+
+### Boost Converter Testing
+
+The boost converter has not yet been tested under load. Now is the time to do so. 
+
+Initially, the output voltage would read as 5V and then immediately drop down to around 4V when measured with the multimeter, which is very bad. However, upon inspecting the circuit, it was noticed that the wire connecting pin EN to pin VIN of the PAM2423 was broken. Fixing this issue made the boost converter perform as expected when measured by the oscilloscope. However, when powering the RPi Pico and LED lights, things seem off. The system powers on just fine when powered through the boost converter, but the RPi Pico voltage is measured to be 3.3V, when it should be at least 5V. Additionally, the system powers on correctly when connected directly to the battery, at which point the system reads 4.2V.
+
+ - Fully charged battery, no boost converter: VSYS = 4.2V. 	 System works.
+ - Fully charged battery, with boost converter: VSYS = 3.3V. System works.
+ - Med charge battery, no boost converter: VSYS = 3.86V. 	 System works.
+ - Med charge battery, with boost converter: VSYS = 3.47V.	 System works.
+ - Low charge vattery, no boost converter: VSYS = 3.6V. IBatt = 0.19A.  System barely works, all leds noticibly dim. 
+ - Low charge vattery, with boost converter: VSYS = 3.292V. IBatt = 0.17A.  System barely works, all leds noticibly dim. 
+
+Neither the boost converter nor the system power are behaving as I expected them to. Not only does the boost converter appear to actually introduce a votlage drop instead of a votage rise when under load, but the system works just fine without the boost converter regardless. However, based on the fact that the system starts to break down at around 3.6VBatt, an actually functional boost converter would likely be beneficial. Therefore, I plan to evaluate and then re-design the boost converter.
+
+### Boost Converter - Why didn't it work?
+
+Here is the circuit schematic of the boost converter: ![Boost converter schematic screenshot](./notebook_imgs/2024-03-20-BoostConverterSchematic.png)
+And here's a view of the oscilloscope monitoring the boost converter while it powers the system off of a single battery: ![Boost converter oscilloscope screenshot](./notebook_imgs/2024-03-20-BoostConverterOscilloscope.png)
+
+The image shows, once more, that when under load the boost converter just adds a voltage drop and some ripple, although the ripple isn't particularly bad in this case. Additionally, some spikes can be seen from when the system sends communications to the LEDs. Unfortunately, this doesn't explain why it doesn't work.
+
+Possible issues:
+
+ - The PAM232 chip cannot actually handle the load
+ - The inductor is undersized
+ - The capacitors are undersized
+ - The diode has some mismatched spec I am unaware of
+
+Now, I could spend a few hours reading literature and taking measurements to try and figure out what went wrong, OR I could use the TI boost converter designer tool to make sure that the next iteration actually works. Notably, we do not need to design for a 2A continuous load anymore, as half the LED's are being used at this point. Therefore, a boost converter designed for a ~1.1A - ~1.2A continuous load will be well within spec.
+
+### Boost Converter - new design
+
+According to some back of the napkin calculculations, the [TLV61070ADBVR](https://www.digikey.com/en/products/detail/texas-instruments/TLV61070ADBVR/16982069?s=N4IgTCBcDaIAQBUAyA1AbARgAwHYsEEQBdAXyA) should be more than capable of handling our load.
+
+Those calculations are:
+
+$$I_{OUT(CL)} = (1 - D) * (I_{LIM} + \frac{1}{2}\Delta I_{L(P-P)})$$
+$$D = 1 = \frac{V_{IN} * 0.9}{V_{OUT}}$$
+$$\Delta I_{L(P-P)} = \frac{V_{IN} * D}{L * f_{SW}}$$
+
+Where $V_{IN} = 3V$ (minimum), $V_{OUT} = 5V$, $f_{SW} = 1MHz$, $I_{LIM} = 2A$ and $L = 2.2\mu H$ (between 2.2 and 4.7), lower seems to grant better results.
+
+The results are: $I_{OUT(CL)} = 1.25A$ of continuous load current!
+
+#### Inductor selection
+
+#### Capacitor selection
