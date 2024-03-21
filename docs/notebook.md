@@ -221,7 +221,7 @@ Possible issues:
  - The capacitors are undersized
  - The diode has some mismatched spec I am unaware of
 
-Now, I could spend a few hours reading literature and taking measurements to try and figure out what went wrong, OR I could use the TI boost converter designer tool to make sure that the next iteration actually works. Notably, we do not need to design for a 2A continuous load anymore, as half the LED's are being used at this point. Therefore, a boost converter designed for a ~1.1A - ~1.2A continuous load will be well within spec.
+Now, I could spend a few hours reading literature and taking measurements to try and figure out what went wrong, OR I could use the TI boost converter designer tool to make sure that the next iteration actually works. Notably, we do not need to design for a 2A continuous load anymore, as half the LED's are being used at this point. Therefore, a boost converter designed for a ~0.6+A continuous load will be well within spec.
 
 ### Boost Converter - new design
 
@@ -230,13 +230,74 @@ According to some back of the napkin calculculations, the [TLV61070ADBVR](https:
 Those calculations are:
 
 $$I_{OUT(CL)} = (1 - D) * (I_{LIM} + \frac{1}{2}\Delta I_{L(P-P)})$$
-$$D = 1 = \frac{V_{IN} * 0.9}{V_{OUT}}$$
+$$D = 1 - \frac{V_{IN} * 0.9}{V_{OUT}} = 0.46$$
 $$\Delta I_{L(P-P)} = \frac{V_{IN} * D}{L * f_{SW}}$$
 
-Where $V_{IN} = 3V$ (minimum), $V_{OUT} = 5V$, $f_{SW} = 1MHz$, $I_{LIM} = 2A$ and $L = 2.2\mu H$ (between 2.2 and 4.7), lower seems to grant better results.
+Where $V_{IN} = 3V$ (minimum), $V_{OUT} = 5V$, $f_{SW} = 1MHz$, $I_{LIM} = 2A$ and $L = 2.2\mu H$ (from datasheet: should be between 2.2 and 4.7, lower seems to grant better results).
 
-The results are: $I_{OUT(CL)} = 1.25A$ of continuous load current!
+The results are: $I_{OUT(CL)} = 1.25A$ of continuous load current! This is more than double the required current.
+
+The example circuit is shown below:
+
+![TI example boost conveter implementation](./notebook_imgs/2024-03-21-BoostConverterExampleTI.png)
 
 #### Inductor selection
 
-#### Capacitor selection
+The datasheet recommends the $2.2\mu H$ part [74438357022](https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/74438357022/6833539?s=N4IgTCBcDaIOwBYEGYAcyCscAMYIF0BfIA)
+
+$I_{L(DC)} = \frac{V_{OUT} * I_{OUT}}{V_{IN} * \eta} = 1.11A $  
+
+$\Delta I_{L(P-P)} = \frac{V_{IN} * D}{L * f_{SW}} = 0.63A$
+
+$I_{L(P)} = I_{L(DC)} + \frac{\Delta I_{L(P-P)}}{2} = 1.43A$
+
+
+#### Output Capacitor Selection
+
+The absolute minimum value of the output capacitor is selected by:
+
+$V_{RIPPLE(ESR)} = I_{L(P)} * R_{ESR} = 0.056$
+
+$C_{OUT} = \frac{I_{OUT} * D_{MAX}}{f_{SW} * V_{RIPPLE}} = 6.6\mu F$. We can give plenty of space for this by selecting a $47\mu F $ capacitor
+
+Part: [865080543009](https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/865080543009/5728103)
+
+#### Resistor selection
+
+The resistors can be selected by the following equation:
+
+$R_1 = (\frac{V_{OUT}}{V_{REF}}-1) * R_2$
+
+where $V_{REF}$ is the internal reference of the chip, $V_{REF} = 0.5V$. The lower $R_2$ is, the less noise there is, and the more quiescent current is wasted. $R_2$ should be below 100k.
+
+By selecting $R_2 = 20k$, we get $R_1 = 180k$. These are both common series 24 resistor values!
+
+#### Loop Stability, Feedforward Capacitor Selection
+
+The feedforward cap is selected by:
+
+$C_3 = \frac{1}{2 * \pi * f_{FFZ} * R_1} = 884pF$
+
+The closest reasonable capacitor value is $C_3 = 820pF$
+
+#### Input Capacitor Selection
+
+The datasheet recommends $C_1 = 10\mu F$
+
+## 2024/03/21
+
+### Power draw test
+
+By powering the 15 LED wand at full brightness (rgb(255, 255, 255)) with a RIGOL DP832 programmable power supply, the power draw is measured.
+
+- At 5.4V, with all led's set to full-bright white, the system draws 5.41V * 0.52A = 2.8W
+- At 5V, with all led's set to full-bright white, the system draws 5V * 0.52A = 2.6W
+- At 3V, with all led's set to full-bright white, the system draws 3V * 0.28A = 0.84W
+
+Notably, at 5.4V and at 5V the system draws the same current, so it is unlikely that the LED's are any brighter when pushed beyond 5V.
+
+When it comes to low brightness (rgb(1, 1, 1)) the results are unsurprising:
+
+- At 5.4V, with all led's set to min-bright white, the system draws 5.41V * 0.02A = 0.11W
+- At 5V, with all led's set to min-bright white, the system draws 5V * 0.03A = 0.15W
+- At 3V, with all led's set to min-bright white, the system draws 3V * 0.03A = 0.09W

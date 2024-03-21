@@ -66,10 +66,10 @@ int main() {
     int message_index = -1;
 
     while(1) {
-        printf("Main loop.\n");
-        put_15_pixels_on(urgb_u32(0xfe, 0xfe, 0xfe));
-        sleep_ms(200);
-        /*
+        //printf("Main loop.\n");
+        //put_15_pixels_on(urgb_u32(0x01, 0x01, 0x01));
+        //sleep_ms(200);
+        
         uint64_t now = time_us_64();
 
         // update raw adx reading
@@ -112,7 +112,7 @@ int main() {
             put_15_pixels(message[message_index/CHAR_WIDTH][message_index % CHAR_WIDTH], urgb_u32(0x0f, 0xbf, 0x0f), urgb_u32(0, 0, 0));
         }
         
-        */
+        
     } 
 
     return 1;
