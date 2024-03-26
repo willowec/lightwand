@@ -301,3 +301,15 @@ When it comes to low brightness (rgb(1, 1, 1)) the results are unsurprising:
 - At 5.4V, with all led's set to min-bright white, the system draws 5.41V * 0.02A = 0.11W
 - At 5V, with all led's set to min-bright white, the system draws 5V * 0.03A = 0.15W
 - At 3V, with all led's set to min-bright white, the system draws 3V * 0.03A = 0.09W
+
+## 2024/03/25
+
+### PCB ordering
+
+Total component price for the PCB with battery protection: 	$23.36
+
+Total component price for the PCB without battery protection:	$19.86
+
+So, keeping in battery protection increases unit price by $3.50. 
+
+This is not including the price for physical materials, like a 3D printed case or a rod for the led strips to mount to. It also excludes the unit price of the 18650 batteries and their holders. The batteries were $7.49 each, and the holders were $0.83 each. Assuming an additional $5 for physical materials (PCB, dowel), the total unit price for each wand is ~$33.17
