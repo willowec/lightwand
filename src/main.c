@@ -16,17 +16,17 @@
 #define ADX_SCL_PIN     17
 
 // defines relating to wand position
-#define ACCEL_MAX_MSS           40
+#define ACCEL_MAX_MSS           30
 #define DIRECTION_TIMEOUT_US    1000 * 100
 
 // defines relating to text display
-#define COL_SHOW_TIME_US        1000 * 3
+#define COL_SHOW_TIME_US        1000 * 2
 
 
 // choose the message to display on the wand
 #define MESSAGE_LEN             3
 #define MESSAGE_LEN_COLUMNS     MESSAGE_LEN * CHAR_WIDTH
-const uint32_t *message[MESSAGE_LEN] = {CHAR_A, CHAR_B, CHAR_C};
+const uint32_t *message[MESSAGE_LEN] = {CHAR_E, CHAR_C, CHAR_E};
 
 int main() {
     int i, err;
