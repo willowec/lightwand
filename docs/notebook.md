@@ -319,20 +319,3 @@ This is not including the price for physical materials, like a 3D printed case o
 ### Revisiting wand position
 
 After watching this video [Simple pendulum animation](https://www.youtube.com/watch?v=cekU-08YQj0) I thought of an idea for a new method for finding the direction change points in the swing. While it is true that the peak acceleration magnitude occurs at the ends of each swing, like the video demonstrates, in practice I have found that since the exact peak value is never the same for each swing, the direction change detection can be finniky. So, instead testing if the acceleration of the wand has crossed a certain prerecorded peak value, the jerk of the wand could be recorded and then simply tested if it is greater than or less than 0. That would also allow the jerk of the wand to be treated like a direction of travel.
-
-Implementing this as a simple check whether jerk < 0 or jerk > 0 leads to intense flickering at rest, and occasionally even some flickering in the middle of the arc of the wand. In order to reduce the flickering, a moving average might be applied over N frames to acquire a smoother "direction" value.
-
-### Slow-mo analysis
-
-By looking closely at a slow motion video of the jerk-based method in action, it appears that jerk is always above zero when the wand is travelling side to side, and always below zero when the wand is changing direction.
-
-After some trial and error, it seems like the following method works pretty well:
-
-	if (jerk < 0 && accel_mss > 0 && dir >= 0) {
-		dir = -1;
-		...
-	}
-    else if (jerk < 0 && accel_mss < 0 && dir <= 0) {
-		dir = 1;
-		...
-	}
