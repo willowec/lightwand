@@ -63,7 +63,7 @@ int main() {
     // variables relating to wand position
     int16_t az_raw;
     double accel_mss = 0;
-    double jerk_msss = 0;
+    double jerk = 0;
     int dir = 0;    // what direction is the wand moving in
     uint64_t last_moved_time_us = 0;
 
@@ -86,20 +86,21 @@ int main() {
         accel_mss = (double)az_raw * ADXL3XXVAL_TO_MSS;
 
         // calculate the jerk of the wand based on the previous frame's acceleration and dt
-        jerk_msss = (accel_mss - prev_accel_mss) / ((double)(now - prev_now) * 1000000)
+        // jerk is NOT calculated to be in m/s^3
+        jerk = (accel_mss - prev_accel_mss) / ((double)(now - prev_now));
 
         // debug print mss
-        printf("%.02f\t%.02f\n", accel_mss, jerk_msss);
+        printf("%.02f\t%.02f\t%d\n", accel_mss, jerk, dir);
 
         // update "direction" of stick when the acceleration changes suddenly
-        if (accel_mss < -ACCEL_MAX_MSS) {
+        if (jerk < 0) {
             last_moved_time_us = now;
             dir = -1;
 
             if (message_index == -1) // handle restarting from timeout
                 message_index = MESSAGE_LEN_COLUMNS - 1;
         }
-        else if (accel_mss >  ACCEL_MAX_MSS) {
+        else if (jerk > 0) {
             last_moved_time_us = now;
             dir =  1;
             
