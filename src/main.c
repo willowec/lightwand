@@ -17,11 +17,14 @@
 
 // defines relating to wand position
 #define ACCEL_MAX_MSS           30
-#define DIRECTION_TIMEOUT_US    1000 * 100
+#define DIRECTION_TIMEOUT_US    1000 * 500
 
 // defines relating to text display
 #define COL_SHOW_TIME_US        1000 * 2
 
+#define PIXEL_CHAR_COLOR        urgb_u32(90, 149, 207)
+#define PIXEL_BG_COLOR          urgb_u32(0, 15, 0)   
+#define PIXEL_REST_COLOR        urgb_u32(0, 0, 15)
 
 // choose the message to display on the wand
 #define MESSAGE_LEN             3
@@ -50,26 +53,30 @@ int main() {
     if (err < 0) {
         printf("ADXL343 Setup failed... error %d\n", err);
     }
-    printf("Accelerometer setuo complete...\n");  
+    printf("Accelerometer setup complete...\n");  
+
     // initialize the LED strip
     setup_ws2812();
     put_15_pixels_on(urgb_u32(0x0f, 0xbf, 0x0f));
     printf("LED's lit green\n");
+
     // variables relating to wand position
     int16_t az_raw;
-    double accel_mss;
+    double accel_mss = 0;
+    double jerk_msss = 0;
     int dir = 0;    // what direction is the wand moving in
     uint64_t last_moved_time_us = 0;
+
+    // variables for tracking changes across frames
+    uint64_t prev_now = 0;
+    double prev_accel_mss = 0;
+
 
     // variables relating to the text message
     uint64_t last_changed_col_time_us = 0;
     int message_index = -1;
 
-    while(1) {
-        //printf("Main loop.\n");
-        //put_15_pixels_on(urgb_u32(0x01, 0x01, 0x01));
-        //sleep_ms(200);
-        
+    while(1) {   
         uint64_t now = time_us_64();
 
         // update raw adx reading
@@ -78,28 +85,41 @@ int main() {
         // convert to acceleration in meters/s^2
         accel_mss = (double)az_raw * ADXL3XXVAL_TO_MSS;
 
+        // calculate the jerk of the wand based on the previous frame's acceleration and dt
+        jerk_msss = (accel_mss - prev_accel_mss) / ((double)(now - prev_now) * 1000000)
+
+        // debug print mss
+        printf("%.02f\t%.02f\n", accel_mss, jerk_msss);
+
         // update "direction" of stick when the acceleration changes suddenly
         if (accel_mss < -ACCEL_MAX_MSS) {
             last_moved_time_us = now;
             dir = -1;
 
-            if (message_index == -1) 
+            if (message_index == -1) // handle restarting from timeout
                 message_index = MESSAGE_LEN_COLUMNS - 1;
         }
         else if (accel_mss >  ACCEL_MAX_MSS) {
             last_moved_time_us = now;
             dir =  1;
             
-            if (message_index == -1) 
+            if (message_index == -1) // handle restarting from timeout
                 message_index = 0;
         }
         else if (last_moved_time_us < (now - DIRECTION_TIMEOUT_US)) {
-            // if the wand has not 'changed direction' in a while, assume it has stopped moving
+            // if the wand has not 'changed direction' in a while, assume it has stopped moving and timeout
             dir = 0;
             message_index = -1;
-            put_15_pixels_on(urgb_u32(0xff, 0, 0));
+            put_15_pixels_on(PIXEL_REST_COLOR);
         }
 
+        // display the direction of the wand on the wand
+        if (dir == -1)
+            put_15_pixels_on(urgb_u32(255, 0, 0));
+        else if (dir == 1)
+            put_15_pixels_on(urgb_u32(0, 255, 0));
+
+        /*
         // scroll through the columns of the characters of the message
         if ((last_changed_col_time_us + COL_SHOW_TIME_US < now) && message_index != -1) {
             message_index = message_index + dir;
@@ -107,12 +127,13 @@ int main() {
             if (message_index < 0) message_index = MESSAGE_LEN_COLUMNS -1;
             last_changed_col_time_us = now;
 
-            printf("moving to col %d\n", message_index);
-
-            put_15_pixels(message[message_index/CHAR_WIDTH][message_index % CHAR_WIDTH], urgb_u32(0x0f, 0xbf, 0x0f), urgb_u32(0, 0, 0));
+            put_15_pixels(message[message_index/CHAR_WIDTH][message_index % CHAR_WIDTH], 
+                PIXEL_CHAR_COLOR, PIXEL_BG_COLOR);
         }
-        
-        
+        */
+
+        prev_now = now;
+       prev_accel_mss = accel_mss;    
     } 
 
     return 1;

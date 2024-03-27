@@ -313,3 +313,9 @@ Total component price for the PCB without battery protection:	$19.86
 So, keeping in battery protection increases unit price by $3.50. 
 
 This is not including the price for physical materials, like a 3D printed case or a rod for the led strips to mount to. It also excludes the unit price of the 18650 batteries and their holders. The batteries were $7.49 each, and the holders were $0.83 each. Assuming an additional $5 for physical materials (PCB, dowel), the total unit price for each wand is ~$33.17
+
+## 2024/05/26
+
+### Revisiting wand position
+
+After watching this video [Simple pendulum animation](https://www.youtube.com/watch?v=cekU-08YQj0) I thought of an idea for a new method for finding the direction change points in the swing. While it is true that the peak acceleration magnitude occurs at the ends of each swing, like the video demonstrates, in practice I have found that since the exact peak value is never the same for each swing, the direction change detection can be finniky. So, instead testing if the acceleration of the wand has crossed a certain prerecorded peak value, the jerk of the wand could be recorded and then simply tested if it is greater than or less than 0. That would also allow the jerk of the wand to be treated like a direction of travel.
