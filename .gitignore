@@ -6,6 +6,9 @@ dev_tests
 light_wand.csv
 light_wand.xml
 
+# ignore generated Gerbers
+gerbers*
+
 # KiCad gitignore from https://github.com/github/gitignore/blob/main/KiCad.gitignore
 *.000
 *.bak
@@ -22,3 +25,4 @@ _autosave-*
 *-save.kicad_pcb
 fp-info-cache
 \#auto_saved_files#
+*.lck
