@@ -319,3 +319,63 @@ This is not including the price for physical materials, like a 3D printed case o
 ### Revisiting wand position
 
 After watching this video [Simple pendulum animation](https://www.youtube.com/watch?v=cekU-08YQj0) I thought of an idea for a new method for finding the direction change points in the swing. While it is true that the peak acceleration magnitude occurs at the ends of each swing, like the video demonstrates, in practice I have found that since the exact peak value is never the same for each swing, the direction change detection can be finniky. So, instead testing if the acceleration of the wand has crossed a certain prerecorded peak value, the jerk of the wand could be recorded and then simply tested if it is greater than or less than 0. That would also allow the jerk of the wand to be treated like a direction of travel.
+
+In practice, this did not work out. The system's framerate may be too slow due to the main loop being blocked by LED communications each frame. This should be investigated
+
+## 2024/05/27
+
+### LED reselection
+
+After a meeting with the client, it became apparent that the wand is simply not bright enough. In order to make this less of an issue, we will switch to the (Adafruit NeoPixel Digital RGBW LED Strip)[https://www.adafruit.com/product/2832]. This will increase the current draw of the system, but also make it much brighter. Unfortunately, this means redesigning the boost converter once more to accomodate 1.2A minimum continuous draw.
+
+### Boost Converter Redesign
+
+Following [Basic Calculation of a Boost Converter's Power Stage](https://www.ti.com/lit/an/slva372d/slva372d.pdf?ts=1711545451132)
+
+From the guide, "The first step to calculate the switch current is to determine the duty cycle, D, for the minimum input voltage. The
+minimum input voltage is used because this leads to the maximum switch current" (2).
+
+$D = 1 - \frac{V_{IN(min)} * \eta}{V_{OUT}}$
+
+The current ripple:
+
+$\Delta I_{L} = \frac{V_{IN(min)} * D}{f_S * L}$, where $f_S$ is the minimum switching frequency.
+
+Finally, we can calculate the maximum output current of the boost converter:
+
+$I_{MAXOUT} = (I_{SWLIM(min)} - \frac{\Delta I_L}{2}) * (1 - D)$
+
+#### Boost Converter Selection
+
+Based on the above calculations, it seems like [The TPS61033DRLR](https://www.digikey.com/en/products/detail/texas-instruments/TPS61033DRLR/18724278) is a good choice.
+
+Unfortunately, the package is SOT-583, which is quite small, on par with the batter protection IC. Regardless, we will use this component. Note that we CANNOT use the TPS610333DRLR, as although it's output is fixed at 5V, the minimum switch current limit is 1.8A instead of 4.7A
+
+An example circuit is given by TI below: ![Example schematic for the TPS61033](./notebook_imgs/2024-03-27-BoostConverterExampleTI.png)
+
+The PCB layout should mimic the layout example on page 21 of the [datasheet](https://www.ti.com/lit/ds/symlink/tps610333.pdf)
+
+#### Setting the output voltage
+
+The output voltage is set by a voltage divider on the FB pin of the chip. Resistor values can be selected by 
+
+$R_1 = (\frac{V_{OUT}}{V_{REF}} - 1) * R_2$, where $V_{REF} = 600mV$ nominally. For best accuracy, keep $R_2 < 300k$
+
+By this equation, we can find that ratio $R_1 / R_2 = 7.33$. A close match in resistor pairs is $R_2 = 15k$, $R_1 = 110k$. That gives an output voltage of almost exactly 5V.
+
+#### Inductor Selection
+
+The datasheet recommends XGL4020-471MEC or XGL4020-102MEC. Since both are the same price and XGL4020-471MEC has a better specs, we could use the XGL4020-471MEC. However, the SRP7050TA-R47M has identitcal specs (inductance, SRF, better DCR, better Isat) except that the inductance was tested at 100kHz instead of 1MHz. Since this is only one order of magnitude off, and the SRF is still way above the operating frequency, it should be a sufficient value. 
+
+#### Cap selection
+
+A $10\mu F$ cap across the input is recommended. In addition, "If the input supply is located more than a few inches from the converter additional bulk capacitance may be required in addition to the ceramic bypass capacitors. A typical choice is a tantalum or
+aluminum electrolytic capacitor with a value of 100 μF". Since our application will have the battery behind at least 3in of wire, we will need to add another cap.
+
+Output cap: [JMK107ABJ106MA-T 10UF](https://www.digikey.com/en/products/detail/taiyo-yuden/JMK107ABJ106MA-T/4970720)
+
+For 10uF, the output ripple is $V_{RIPPLE} = \frac{1.3A * .6}{2MHz * 10uF} = 39mV$ which is acceptable. Since the recommended layout shows two adjacent to each other on the datahseet, we will have two (this will theoretically halve the ripple anyway). 
+
+#### PG pin and R3
+
+According to the datasheet, "If not used, the PG pin can be left floating or connected to GND". Since PG seems optional, we will ground the pin
