@@ -363,6 +363,8 @@ $R_1 = (\frac{V_{OUT}}{V_{REF}} - 1) * R_2$, where $V_{REF} = 600mV$ nominally. 
 
 By this equation, we can find that ratio $R_1 / R_2 = 7.33$. A close match in resistor pairs is $R_2 = 15k$, $R_1 = 110k$. That gives an output voltage of almost exactly 5V.
 
+The max current through the resistors will be $\frac{5V}{R_1 + R_2} = 40\mu A$. Therefore, the power requirements are very lenient for these resistors.
+
 #### Inductor Selection
 
 The datasheet recommends XGL4020-471MEC or XGL4020-102MEC. Since both are the same price and XGL4020-471MEC has a better specs, we could use the XGL4020-471MEC. However, the SRP7050TA-R47M has identitcal specs (inductance, SRF, better DCR, better Isat) except that the inductance was tested at 100kHz instead of 1MHz. Since this is only one order of magnitude off, and the SRF is still way above the operating frequency, it should be a sufficient value. 
