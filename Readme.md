@@ -13,4 +13,4 @@
 ## Credits
 
  - Code, design, and documentation by Willow Cunningham unless otherwise specified
- - Project advised by Andrew Sheaff
+ - Project comissioned by Dr. Yifeng Zhu and advised by Professor Andrew Sheaff
