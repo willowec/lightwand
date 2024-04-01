@@ -1,3 +1,7 @@
+/*
+Main C file for the light wand project
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -61,7 +65,7 @@ int main() {
     printf("LED's lit green\n");
 
     // variables relating to wand position
-    int16_t az_raw;
+    int16_t ay_raw;
     double accel_mss = 0;
     double jerk_msss = 0;
     int dir = 0;    // what direction is the wand moving in
@@ -75,10 +79,10 @@ int main() {
         uint64_t now = time_us_64();
 
         // update raw adx reading
-        adxl343_getz(&accelerometer, &az_raw);
+        adxl343_gety(&accelerometer, &ay_raw);
 
         // convert to acceleration in meters/s^2
-        accel_mss = (double)az_raw * ADXL3XXVAL_TO_MSS;
+        accel_mss = (double)ay_raw * ADXL3XXVAL_TO_MSS;
 
         // update "direction" of stick when the acceleration changes suddenly
         if (accel_mss < -ACCEL_MAX_MSS) {

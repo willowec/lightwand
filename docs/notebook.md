@@ -381,3 +381,7 @@ For 10uF, the output ripple is $V_{RIPPLE} = \frac{1.3A * .6}{2MHz * 10uF} = 39m
 #### PG pin and R3
 
 According to the datasheet, "If not used, the PG pin can be left floating or connected to GND". Since PG seems optional, we will ground the pin
+
+## 2024/04/01
+
+After beginning work on a python tool to plot the accelerometer data in order to get a better model of the wand's position in space, I made the embarassing realisation that since I re-built the wand, the Z-axis is no longer the axis of motion for the wand. For the current prototype, the Y-axis should be used. For the current PCB design, the X-acis should be used. It may be prudent to add this as a compilation option in the CMakeLists.txt file.

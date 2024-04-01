@@ -1,7 +1,8 @@
 # Light Wand
 
+A Persistance of Vision project for the University of Maine Electrical and Computer Engineering department.
 
-## Quickstart
+## Compiling
 
     git submodule update --init --recursive
     mkdir build
