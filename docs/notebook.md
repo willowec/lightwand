@@ -393,3 +393,11 @@ After writing a new build target (accelerometer_data.uf2) and a script for commu
 ![Accelerometer data plot](./notebook_imgs/2024-04-01-AccelAndJerkPlots.png)
 
 As can be easily seen in the plot, even though the jerk direction (its sign) generally follows the direction the wand is moving in, even when filtered by a moving average it is inconsistent and jumpy. A better solution might be to add hysteresis instead of averaging.
+
+------------------
+
+Actually, it appears that a large part of the problem was as follows: Originally, the direction of the wand was assumed to be negative if the jerk was less than zero, and positive otherwise. This introduces confusing jitter becase the calculated jerk is often exactly zero. Changing the code to hold its last direction in the case of jerk==0 produced the following plots:
+
+![Accelerometer data plot](./notebook_imgs/2024-04-01-AccelAndJerkPlotsFixed.png)
+
+It is still apparent that windowing is not useful. By zooming in, it can be seen that the width and frequency of the innacuracies are identical, the windowing only introduces a delay. Still, this one change greatly improved the accuracy of the estimated direction.

@@ -19,8 +19,16 @@ from pathlib import Path
 
 def calc_direction_from_jerk(jerks: np.array):
     """Calculates the direction implied by the jerk of the wand"""
-    
+
     dirs = np.zeros_like(jerks)
+
+    for i in range(1, len(dirs)):
+        if jerks[i] < 0:
+            dirs[i] = -10
+        elif jerks[i] > 0:
+            dirs[i] = 10
+        else:
+            dirs[i] = dirs[i - 1]  # hold direction if there was no jerk
 
     return dirs
 
@@ -79,9 +87,9 @@ if __name__ == "__main__":
         axes[1][0].set_ylabel("Jerk (m/s^3)")
 
         # get and plot the direction implied by the jerk with no averaging window
-        direction = [-10 if j < 0 else 10 for j in jerks]
+        direction = calc_direction_from_jerk(jerks)
         axes[0][1].plot(times, accels)
-        axes[0][1].plot(times, direction)
+        axes[0][1].plot(times, direction, 'o')
         axes[0][1].set_title("Jerk Dir imposed over Accel")
         axes[0][1].set_xlabel("Time (s)")
         axes[0][1].set_ylabel("Acceleration (m/s^2)")
@@ -89,9 +97,9 @@ if __name__ == "__main__":
         # get and plot the direction implied by the jerk with an averaging window
         window = 10
         avged_jerks = np.convolve(jerks, np.ones(window), 'valid') / window
-        direction = np.concatenate(([0 for i in list(range(int(np.floor(window/2)-1)))], [-10 if j < 0 else 10 for j in avged_jerks], [0 for i in range(int(np.ceil(window/2)))]))
+        direction = calc_direction_from_jerk(np.concatenate((np.zeros(int(np.floor(window/2))-1), avged_jerks, np.zeros(int(np.ceil(window/2))))))
         axes[1][1].plot(times, accels)
-        axes[1][1].plot(times, direction)
+        axes[1][1].plot(times, direction, 'o')
         axes[1][1].set_title(f"Jerk Dir imposed over Accel (Averaged {window=})")
         axes[1][1].set_xlabel("Time (s)")
         axes[1][1].set_ylabel("Acceleration (m/s^2)")
