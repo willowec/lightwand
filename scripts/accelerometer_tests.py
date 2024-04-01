@@ -33,6 +33,25 @@ def calc_direction_from_jerk(jerks: np.array):
     return dirs
 
 
+def hysteresize_direction(dirs: np.array, hyst_len: int):
+    """
+    Applies a hysteresis effect to the direction
+    The direction will not change until hyst_len samples all agree
+    """
+
+    new_dirs = np.zeros_like(jerks)
+
+    for i in range(hyst_len, len(dirs)):
+        if (dirs[i-hyst_len:i] < 0).all():
+            new_dirs[i] = -10
+        elif (dirs[i-hyst_len:i] > 0).all():
+            new_dirs[i] = 10
+        else:
+            new_dirs[i] = new_dirs[i - 1]  # hold direction if there was no consistent series       
+
+    return new_dirs
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("com_port", type=str, help="The COM port the wand is plugged into")
@@ -89,24 +108,21 @@ if __name__ == "__main__":
         # get and plot the direction implied by the jerk with no averaging window
         direction = calc_direction_from_jerk(jerks)
         axes[0][1].plot(times, accels)
-        axes[0][1].plot(times, direction, 'o')
+        axes[0][1].plot(times, direction)
         axes[0][1].set_title("Jerk Dir imposed over Accel")
         axes[0][1].set_xlabel("Time (s)")
         axes[0][1].set_ylabel("Acceleration (m/s^2)")
 
-        # get and plot the direction implied by the jerk with an averaging window
-        window = 10
-        avged_jerks = np.convolve(jerks, np.ones(window), 'valid') / window
-        direction = calc_direction_from_jerk(np.concatenate((np.zeros(int(np.floor(window/2))-1), avged_jerks, np.zeros(int(np.ceil(window/2))))))
+        # get and plot the direction implied by the jerk with a hysteresis effect
+        hyst_len = 25
+        new_direction = hysteresize_direction(direction, hyst_len)
         axes[1][1].plot(times, accels)
-        axes[1][1].plot(times, direction, 'o')
-        axes[1][1].set_title(f"Jerk Dir imposed over Accel (Averaged {window=})")
+        axes[1][1].plot(times, new_direction)
+        axes[1][1].set_title(f"Jerk Dir imposed over Accel (with hysteresis {hyst_len=})")
         axes[1][1].set_xlabel("Time (s)")
         axes[1][1].set_ylabel("Acceleration (m/s^2)")
-
         f.tight_layout()
         plt.show()
-
 
     else:
         # Open the com port and start polling for data
