@@ -385,3 +385,11 @@ According to the datasheet, "If not used, the PG pin can be left floating or con
 ## 2024/04/01
 
 After beginning work on a python tool to plot the accelerometer data in order to get a better model of the wand's position in space, I made the embarassing realisation that since I re-built the wand, the Z-axis is no longer the axis of motion for the wand. For the current prototype, the Y-axis should be used. For the current PCB design, the X-acis should be used. It may be prudent to add this as a compilation option in the CMakeLists.txt file.
+
+### Accelerometer Data
+
+After writing a new build target (accelerometer_data.uf2) and a script for communicating with it ([accelerometer_tests.py](../scripts/accelerometer_tests.py)), the accelerometer data can now be plotted. The image below shows the acceleration data as transmitted from the wand, the calculated jerk (laptop side) and the implied direction of the jerk for various averaging windows.
+
+![Accelerometer data plot](./notebook_imgs/2024-04-01-AccelAndJerkPlots.png)
+
+As can be easily seen in the plot, even though the jerk direction (its sign) generally follows the direction the wand is moving in, even when filtered by a moving average it is inconsistent and jumpy. A better solution might be to add hysteresis instead of averaging.

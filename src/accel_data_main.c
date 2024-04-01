@@ -54,6 +54,6 @@ int main()
         // convert to acceleration in meters/s^2
         accel_mss = (double)ay_raw * ADXL3XXVAL_TO_MSS;
 
-        printf("%.03f,%d\n", accel_mss, time_us_64());
+        printf("%f,%d\n", accel_mss, time_us_64());
     }
 }
