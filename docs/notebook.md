@@ -409,4 +409,8 @@ And now, observe how adding a hysteresis effect (only updating the direction of 
 
 ![Jerk direction hysteresized](./notebook_imgs/2024-04-01-JerkDirHysteresized.png)
 
-Now that we have a good method for finding the direction the wand travels in, the next step is to put it on the hardware!
+Now that we have a good method for finding the direction the wand travels in, the next step is to put it on the hardware! While in the plot, a hysteresis window of 25 samples was used, in the real case we can expect the main loop to run much slower than the data acquisition build target, so fewer samples will likely be used.
+
+---------------------------
+
+After implementing this new system on the wand and testing by lighting the wand red for left (dir = 0) and green for right (dir = 1), the wand direction appears to be very well characterized. The next step is to calculate the period of the wand's motion and update that every cycle.

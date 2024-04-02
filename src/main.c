@@ -6,7 +6,6 @@ Main C file for the light wand project
 #include <stdlib.h>
 
 #include "pico/stdlib.h"
-#include "pico/double.h"
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
 
@@ -20,8 +19,9 @@ Main C file for the light wand project
 #define ADX_SCL_PIN     17
 
 // defines relating to wand position
-#define ACCEL_MAX_MSS           30
-#define DIRECTION_TIMEOUT_US    1000 * 500
+#define ACCEL_MAX_MSS               30
+#define DIRECTION_TIMEOUT_US        1000 * 500
+#define DIRECTION_HYSTERESIS_MASK   0x00ffffff
 
 // defines relating to text display
 #define COL_SHOW_TIME_US        1000 * 2
@@ -66,10 +66,12 @@ int main() {
 
     // variables relating to wand position
     int16_t ay_raw;
-    double accel_mss = 0;
-    double jerk_msss = 0;
-    int dir = 0;    // what direction is the wand moving in
-    uint64_t last_moved_time_us = 0;
+    float accel_mss = 0;
+    float prev_accel_mss = 0;
+    float jerk_msss = 0;
+    uint64_t prev_time_us = 0;
+    uint64_t hidden_direction_history = 0;  // lsb is current hidden direction
+    uint64_t diplay_direction_history = 0;  // lsb is current display direction.
 
     // variables relating to the text message
     uint64_t last_changed_col_time_us = 0;
@@ -82,39 +84,50 @@ int main() {
         adxl343_gety(&accelerometer, &ay_raw);
 
         // convert to acceleration in meters/s^2
-        accel_mss = (double)ay_raw * ADXL3XXVAL_TO_MSS;
+        accel_mss = (float)ay_raw * ADXL3XXVAL_TO_MSS;
 
-        // update "direction" of stick when the acceleration changes suddenly
-        if (accel_mss < -ACCEL_MAX_MSS) {
-            last_moved_time_us = now;
-            dir = -1;
+        // calculate the jerk of the wand in meters/s^3
+        jerk_msss = (accel_mss - prev_accel_mss) / ((float)(now - prev_time_us) / 1000000.0f);
+        
+        // caculate the direction of the wand based on jerk
+        if (jerk_msss < 0) {
+            // if jerk is negative, wand is moving 'left' (0)
+            hidden_direction_history = (hidden_direction_history << 1) | 0;
+        }
+        else if (jerk_msss > 0) {
+            // if jerk is positive, wand is moving 'right' (1)
+            hidden_direction_history = (hidden_direction_history << 1) | 1;
+        }
+        else {
+            // otherwise, assume wand is continuing in the same direction
+            i = hidden_direction_history & 1;
+            hidden_direction_history = (hidden_direction_history << 1) | i;
+        }
 
-            if (message_index == -1) // handle restarting from timeout
-                message_index = MESSAGE_LEN_COLUMNS - 1;
+        // update the displayed direction based on the hidden direction
+        if ((hidden_direction_history & DIRECTION_HYSTERESIS_MASK) == 0) {
+            // all previous hidden directions in DIRECTION_HYSTERESIS_MASK were '0'
+            diplay_direction_history = (diplay_direction_history << 1) | 0;
         }
-        else if (accel_mss >  ACCEL_MAX_MSS) {
-            last_moved_time_us = now;
-            dir =  1;
-            
-            if (message_index == -1) // handle restarting from timeout
-                message_index = 0;
+        else if ((hidden_direction_history & DIRECTION_HYSTERESIS_MASK) == DIRECTION_HYSTERESIS_MASK) {
+            // all previous hidden directions in DIRECTION_HYSTERESIS_MASK were '1'
+            diplay_direction_history = (diplay_direction_history << 1) | 1;
         }
-        else if (last_moved_time_us < (now - DIRECTION_TIMEOUT_US)) {
-            // if the wand has not 'changed direction' in a while, assume it has stopped moving and timeout
-            dir = 0;
-            message_index = -1;
-            put_15_pixels_on(PIXEL_REST_COLOR);
+        else {
+            i = diplay_direction_history & 1;
+            diplay_direction_history = (diplay_direction_history << 1) | i;
         }
+
+        // display the direction of the wand on the wand
+        if ((diplay_direction_history & 1) == 1)
+            put_15_pixels_on(urgb_u32(255, 0, 0));
+        else if ((diplay_direction_history & 1) == 0)
+            put_15_pixels_on(urgb_u32(0, 255, 0));
+        else
+            put_15_pixels_on(urgb_u32(255, 255, 255));
+
 
         /*
-        // display the direction of the wand on the wand
-        if (dir == -1)
-            put_15_pixels_on(urgb_u32(255, 0, 0));
-        else if (dir == 1)
-            put_15_pixels_on(urgb_u32(0, 255, 0));
-        */
-
-        
         // scroll through the columns of the characters of the message
         if ((last_changed_col_time_us + COL_SHOW_TIME_US < now) && message_index != -1) {
             message_index = message_index + dir;
@@ -125,6 +138,10 @@ int main() {
             put_15_pixels(message[message_index/CHAR_WIDTH][message_index % CHAR_WIDTH], 
                 PIXEL_CHAR_COLOR, PIXEL_BG_COLOR);
         }
+        */
+
+        prev_accel_mss = accel_mss;
+        prev_time_us = now;
     } 
 
     return 1;
