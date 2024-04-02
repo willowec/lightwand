@@ -401,3 +401,12 @@ Actually, it appears that a large part of the problem was as follows: Originally
 ![Accelerometer data plot](./notebook_imgs/2024-04-01-AccelAndJerkPlotsFixed.png)
 
 It is still apparent that windowing is not useful. By zooming in, it can be seen that the width and frequency of the innacuracies are identical, the windowing only introduces a delay. Still, this one change greatly improved the accuracy of the estimated direction.
+
+Here is a better look at why hysteresis might help: When the wand is changing direction, the estimated direction often flickers back and forth:
+![Jerk direction zoomed in](./notebook_imgs/2024-04-01-JerkDirZoomed.png)
+
+And now, observe how adding a hysteresis effect (only updating the direction of N previous samples agree) smooths out the direction calculations!
+
+![Jerk direction hysteresized](./notebook_imgs/2024-04-01-JerkDirHysteresized.png)
+
+Now that we have a good method for finding the direction the wand travels in, the next step is to put it on the hardware!
