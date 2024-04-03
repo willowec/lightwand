@@ -31,7 +31,7 @@ Main C file for the light wand project
 // choose the message to display on the wand
 // the message will be centered in the columns, and scaled as well
 #define MESSAGE_LEN             3
-#define MESSAGE_CHAR_SCALE      1   // 2 to double the width of the characters
+#define MESSAGE_CHAR_SCALE      3   // 2 to double the width of the characters
 #define N_DISPLAY_COLUMNS       256
 const uint32_t *message[MESSAGE_LEN] = {CHAR_E, CHAR_C, CHAR_E};
 
@@ -39,7 +39,7 @@ const uint32_t *message[MESSAGE_LEN] = {CHAR_E, CHAR_C, CHAR_E};
 void core1_main(void);
 void core1_sio_irq(void);
 void signal_dirchange(uint64_t swing_time, uint64_t dir_hist);
-int build_columns(uint32_t **message, int m_len, uint32_t *columns, int n_cols, int scale);
+int build_columns(const uint32_t **message, int m_len, uint32_t *columns, int n_cols, int scale);
 
 
 // Core 0 main handles wand position calculations
@@ -174,6 +174,7 @@ void core1_main(void)
         while (multicore_fifo_rvalid())
             fifo_val = multicore_fifo_pop_blocking();
 
+
         // extract the prev swing length from the fifo value
         prev_swing_length = (uint64_t)(fifo_val & ~(1 << 31));
 
@@ -183,15 +184,11 @@ void core1_main(void)
         // calculate the amount of time in us each column should be displayed
         col_display_time = prev_swing_length / N_DISPLAY_COLUMNS;
 
-        printf("Bing!!\n");
-
         // now, loop for the duration of the swing. 
         for (i = 0; i < N_DISPLAY_COLUMNS; i++) {
             // If something new shows up on the FIFO, finish the swing
             if (multicore_fifo_rvalid()) 
                 break;
-
-            printf("%u\n", columns[i]);
 
             render_time = put_15_pixels(columns[i], urgb_u32(0, 255, 255), urgb_u32(0, 0, 0));
 
@@ -200,6 +197,7 @@ void core1_main(void)
         }
     }
 
+    free(columns);
     return;
 }
 
@@ -207,7 +205,7 @@ void core1_main(void)
 // Sends a message to Core 1 that starts displaying the next cycle
 void signal_dirchange(uint64_t swing_time, uint64_t dir_hist)
 {
-    // printf("%f\t\n", swing_time / 1000000.0f);
+    printf("%f\t\n", swing_time / 1000000.0f);
 
     // tell core1 to start displaying a new swing. Send 31 bits of prev_swing_time_length,
     // with the MSB of the transferred 32 bit value being the direction of the wand.
@@ -222,7 +220,7 @@ Converts the message (an array of arrays representing characters) into a 1-D arr
 The message is centered in the columns, and scaled by 'scale'
 Returns -1 on failure
 */
-int build_columns(uint32_t **message, int m_len, uint32_t *columns, int n_cols, int scale)
+int build_columns(const uint32_t **message, int m_len, uint32_t *columns, int n_cols, int scale)
 {
     int i, j;
     int m_col_width = m_len * CHAR_WIDTH;
@@ -236,9 +234,8 @@ int build_columns(uint32_t **message, int m_len, uint32_t *columns, int n_cols, 
         columns[i] = 0;
 
         // only write the characters to the columns when near the center
-        if ((i > n_cols/2 - (m_col_width * scale)) && (i < n_cols/2 + (m_col_width * scale))) {
+        if ((i >= n_cols/2 - ((m_col_width / 2) * scale)) && (i <= n_cols/2 + ((m_col_width / 2) * scale))) {
             columns[i] = message[(j / scale) / CHAR_WIDTH][(j / scale) % CHAR_WIDTH]; 
-
             j++;
         }
     }

@@ -76,9 +76,9 @@ static inline uint64_t put_15_pixels(uint32_t bits, uint32_t color_on, uint32_t 
         for(i=3; i>=0; i--) {
             // choose whether we are in an "on" or "off" pixel
             if (((bits >> (transmitted_bytes/3)) & 1) == 1)
-                color_val = ((color_off >> ((2-color_channel) * 8u)) & 0xff);
-            else
                 color_val = ((color_on >> ((2-color_channel) * 8u)) & 0xff);
+            else
+                color_val = ((color_off >> ((2-color_channel) * 8u)) & 0xff);
 
             // push the next color channel value onto the transmission message
             msg |= color_val << (i * 8u); 
