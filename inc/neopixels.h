@@ -12,7 +12,8 @@ Functions for controlling neopixel arrays
 #include <stdio.h>
 
 // lights up a full 15 pixel neopixel strip as one color
-static inline void put_15_pixels_on(uint32_t pixel_grb) {
+// returns the amount of time in microseconds it took to resolve the function
+static inline uint64_t put_15_pixels_on(uint32_t pixel_grb) {
     /*
     pio_sm_put_blocking will always put out 32 bits, but we want to send 24 bit chunks in a
     continuous stream. Therefore, some slightly more complicated looping behaviour is required
@@ -21,6 +22,8 @@ static inline void put_15_pixels_on(uint32_t pixel_grb) {
     int color_channel = 0; // 0: green, 1: red, 2: blue
     int transmitted_bytes = 0;
     int i;
+    uint64_t start_us = time_us_64();
+
     while(1) {
         uint32_t msg = 0;
         for(i=3; i>=0; i--) {
@@ -52,15 +55,19 @@ static inline void put_15_pixels_on(uint32_t pixel_grb) {
     message is still being transmitted over the data line. Whatever the case, this works, and we don't need the wand to flicker
     particularly fast anyway 
     */
-    sleep_us(200);    
+    sleep_us(200);   
+
+    return time_us_64() - start_us; 
 }
 
 // parses the bits of a 32 bit integer and turns leds on or off based on the bits
-static inline void put_15_pixels(uint32_t bits, uint32_t color_on, uint32_t color_off)
+// returns the amount of time in microseconds it took to resolve the function
+static inline uint64_t put_15_pixels(uint32_t bits, uint32_t color_on, uint32_t color_off)
 {
     int color_channel = 0; // 0: green, 1: red, 2: blue
     int transmitted_bytes = 0;
     int i;
+    uint64_t start_us = time_us_64();
 
     uint8_t color_val;
 
@@ -93,6 +100,8 @@ static inline void put_15_pixels(uint32_t bits, uint32_t color_on, uint32_t colo
         sleep_us(1);
 
     sleep_us(200);    // additional wait so WS2812 knows to finish transaction
+
+    return time_us_64() - start_us; 
 }
 
 
