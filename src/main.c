@@ -184,17 +184,24 @@ void core1_main(void)
         // calculate the amount of time in us each column should be displayed
         col_display_time = prev_swing_length / N_DISPLAY_COLUMNS;
 
-        // now, loop for the duration of the swing. 
+        // now, loop for the duration of the swing, in the proper direction 
         for (i = 0; i < N_DISPLAY_COLUMNS; i++) {
             // If something new shows up on the FIFO, finish the swing
-            if (multicore_fifo_rvalid()) 
+            if (multicore_fifo_rvalid()) {
                 break;
+            }
 
-            render_time = put_15_pixels(columns[i], urgb_u32(0, 255, 255), urgb_u32(0, 0, 0));
+            // index in the proper direction
+            if (dir == 0)
+                render_time = put_15_pixels(columns[i], urgb_u32(0, 255, 255), urgb_u32(0, 0, 0));
+            else
+                render_time = put_15_pixels(columns[N_DISPLAY_COLUMNS-i-1], urgb_u32(0, 255, 255), urgb_u32(0, 0, 0));
 
             // sleep the remaining amount of column time
             sleep_us(col_display_time - render_time);
         }
+
+        printf("finished %d/%d\n", i, N_DISPLAY_COLUMNS);
     }
 
     free(columns);
@@ -205,7 +212,7 @@ void core1_main(void)
 // Sends a message to Core 1 that starts displaying the next cycle
 void signal_dirchange(uint64_t swing_time, uint64_t dir_hist)
 {
-    printf("%f\t\n", swing_time / 1000000.0f);
+    // printf("%f\t\n", swing_time / 1000000.0f);
 
     // tell core1 to start displaying a new swing. Send 31 bits of prev_swing_time_length,
     // with the MSB of the transferred 32 bit value being the direction of the wand.

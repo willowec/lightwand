@@ -416,8 +416,54 @@ Now that we have a good method for finding the direction the wand travels in, th
 After implementing this new system on the wand and testing by lighting the wand red for left (dir = 0) and green for right (dir = 1), the wand direction appears to be very well characterized. The next step is to calculate the period of the wand's motion and update that every cycle.
 
 ## 2024/04/01
-#### Period calculation and keeping the image static
+### Period calculation and keeping the image static
 
 The current goal is to get the wand to display a vertical bar at the middle of its swing, and minimize the amount that bar moves from swing to swing. Initial testing shows that the average length of casual but firm one-handed swing is around .45 seconds, and around 350 iterations through the main while loop occur during this time.
 
 Rick Eason recommended that the display be handled by clock division interrupt. Because this system is dual-core however, it may be better to simply have a separate while loop on core 1 that handles the LED display. By making put_15_pixels_on() and put_15_pixels() return the amount of microseconds slept during their run, we can simply wait $\frac{swinglen}{N_{updates}} - pixeltime$ microseconds every loop.
+
+## 2024/04/04
+### Debugging wand display
+
+After implementing the period calculation using the method outlined above, the result is not exactly what one would want. It seems like the columns are almost never being finished in a swing. To get a closer look, I added a printf after each swing to find out how many columns were actually rendered in that swing.
+
+Waving the wand as fast as possible with a two handed grip:
+```
+finished 123/256
+finished 108/256
+finished 124/256
+finished 108/256
+finished 154/256
+finished 93/256
+finished 108/256
+finished 108/256
+finished 139/256
+finished 62/256
+finished 154/256
+finished 108/256
+finished 139/256
+finished 92/256
+finished 108/256
+```
+
+Waving the wand at a good clip, one handed grip:
+```
+finished 256/256
+finished 256/256
+finished 255/256
+finished 256/256
+finished 256/256
+finished 256/256
+finished 256/256
+finished 239/256
+finished 256/256
+finished 233/256
+finished 256/256
+finished 224/256
+finished 256/256
+finished 248/256
+finished 256/256
+finished 256/256
+```
+
+From this test, we can see that the software actually can't keep up with a two-handed swong. This might not be such a bad thing - waving the wand as fast as possible makes the weilder look rather silly, and also puts quite a bit of strain on the wrists. Hopefully, with brighter LED's the slower swing speed will be sufficient.
