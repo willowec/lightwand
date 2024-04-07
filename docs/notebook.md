@@ -467,3 +467,56 @@ finished 256/256
 ```
 
 From this test, we can see that the software actually can't keep up with a two-handed swong. This might not be such a bad thing - waving the wand as fast as possible makes the weilder look rather silly, and also puts quite a bit of strain on the wrists. Hopefully, with brighter LED's the slower swing speed will be sufficient.
+
+## 2024/04/07
+### Case Design (3D print)
+
+In order to house the electronics and make a grip for the user to hold the wand, a 3D printed case and/or handle should be designed. There are two main options here:
+
+1. Combined case/handle
+
+	- \+ sleeker design
+	- \+ only one part needs to be printed
+	- \- much more complicated design
+	- \- more difficult to print
+	- \- more problematic if not physically strong enough
+
+2. Separate electronics case (mounted on rod behind leds) and handle (mounted at base of rod)
+
+	- \+ much simpler design
+	- \+ much less likely for handle to snap
+	- \- clunkier look
+	- \- more parts to be printed
+
+After a bit of thought, it seems like option 2 is the better choice for now. It is likely that I would fail to create an adequate design if I went with option 1.
+
+#### Shaft parameters
+
+The shaft should be a wooden dowel that is thick enough and sturdy enough to both have parts mounted to it, and withstand being waved back and forth at a high speed.
+
+- Length requirements: Minimum 10cm, 3.9in (handle) + 52cm, 20.5in  (led strip). Lets call it 65cm, 25.5in for safety's sake
+
+- Selected component: [Madison Mill 0.5-in dia x 24-in L Square Oak Dowel (12-Pack)](https://www.lowes.com/pd/Madison-Mill-1-2-x-24-Oak-Square-12-PKG/5001880827)
+
+	- Shape: rectangular prism
+	- Width/Height: 1.27cm
+	- Length: 60.96cm
+
+#### Handle parameters
+
+The handle should be able to comfortably fit one adult hand.
+
+- External Shape: ~Cylinder 
+- Diameter: ~3.5cm
+- Length: 10+cm
+- Shaft slot shape: rectangle
+- Shaft slot diameter: 1.27cm
+- Attachment mechanism: Wood screw + glue
+
+#### Case parameters
+
+The case needs to house the rocker switch, populated PCB, and battery holder. The battery should be accessible for swapping. Because the electronics no longer need to be contained within the handle of the wand, it may actually be wise to not cover them - instead of designing a complete case, merely design a platform for the PCB and battery to mount on, and make it easy to mount to the shaft. For that matter, if wooden dowels are used the battery holders can be attached separately from the PCB+switch using a single wood screw and glue. The batteries are held in extremely tight by the holders - to remove them, a prybar is often needed. This means we can safely assume that the batteries will not fly off when the wand is waved.
+
+#### Screws
+
+Currently, the plan is to devote two screws per wand. The selected screws are the following product: [Hillman #2 x 1/4-in Brass Interior Wood Screws (12-Per Box)](https://www.lowes.com/pd/Hillman-2-x-1-4-in-Gold-Brass-Round-Interior-Exterior-Wood-Screws-12-Count/3011870). They have a shaft diameter of 2mm and a length of 6.4mm

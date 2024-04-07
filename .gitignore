@@ -2,6 +2,9 @@ build
 .vscode
 dev_tests
 
+# ignore freecad files
+*.FCBak
+
 # ignore the generated BOMs
 light_wand.csv
 light_wand.xml
