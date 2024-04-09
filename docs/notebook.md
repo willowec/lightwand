@@ -517,6 +517,16 @@ The handle should be able to comfortably fit one adult hand.
 
 The case needs to house the rocker switch, populated PCB, and battery holder. The battery should be accessible for swapping. Because the electronics no longer need to be contained within the handle of the wand, it may actually be wise to not cover them - instead of designing a complete case, merely design a platform for the PCB and battery to mount on, and make it easy to mount to the shaft. For that matter, if wooden dowels are used the battery holders can be attached separately from the PCB+switch using a single wood screw and glue. The batteries are held in extremely tight by the holders - to remove them, a prybar is often needed. This means we can safely assume that the batteries will not fly off when the wand is waved.
 
+- PCB Width: 30.48mm
+- PCB Height: 95.25mm
+- PCB thickness: 1.6mm
+- PCB holder arms overhang max (top half): 1.4mm (oops!!)
+- PCB holder arms overhang max (pico half): 3.3mm (okay)
+
 #### Screws
 
 Currently, the plan is to devote two screws per wand. The selected screws are the following product: [Hillman #2 x 1/4-in Brass Interior Wood Screws (12-Per Box)](https://www.lowes.com/pd/Hillman-2-x-1-4-in-Gold-Brass-Round-Interior-Exterior-Wood-Screws-12-Count/3011870). They have a shaft diameter of 2mm and a length of 6.4mm
+
+## 2024/04/08
+
+While it is an educationally enriching experience to learn to model and print 3D parts for this project, the requirement for a PCB mount could have, in hindsight, been completely avoided by simply having mounting holes on the PCB and screwing them straight into the dowel. If this project is continued after version 1, that will be one of the changes.
