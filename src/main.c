@@ -24,15 +24,15 @@ Main C file for the light wand project
 #define DIR_HYSTERESIS_MASK   0x00ffffff
 
 // defines relating to text display
-#define PIXEL_CHAR_COLOR        urgb_u32(90, 149, 207)
-#define PIXEL_BG_COLOR          urgb_u32(0, 0, 5)   
-#define PIXEL_REST_COLOR        urgb_u32(5, 5, 5)
+#define PIXEL_CHAR_COLOR        urgbw_u32(0, 0, 255, 255)
+#define PIXEL_BG_COLOR          urgbw_u32(0, 0, 0, 0)   
+#define PIXEL_REST_COLOR        urgbw_u32(0, 0, 0, 0)
 
 // choose the message to display on the wand
 // the message will be centered in the columns, and scaled as well
 #define MESSAGE_LEN             3
-#define MESSAGE_CHAR_SCALE      3   // 2 to double the width of the characters
-#define N_DISPLAY_COLUMNS       256
+#define MESSAGE_CHAR_SCALE      2   // 2 to double the width of the characters
+#define N_DISPLAY_COLUMNS       200
 const uint32_t *message[MESSAGE_LEN] = {CHAR_E, CHAR_C, CHAR_E};
 
 // function prototypes
@@ -69,7 +69,7 @@ int main() {
 
     // initialize the LED strip
     setup_ws2812();
-    put_15_pixels_on(urgb_u32(0x0f, 0xbf, 0x0f));
+    put_15_pixels_on_rgbw(urgbw_u32(0, 255, 0, 128));
     printf("LED's lit green\n");
 
     // Launch the second core
@@ -193,9 +193,9 @@ void core1_main(void)
 
             // index in the proper direction
             if (dir == 0)
-                render_time = put_15_pixels(columns[i], urgb_u32(0, 255, 255), urgb_u32(0, 0, 0));
+                render_time = put_15_pixels_rgbw(columns[i], PIXEL_CHAR_COLOR, PIXEL_BG_COLOR);
             else
-                render_time = put_15_pixels(columns[N_DISPLAY_COLUMNS-i-1], urgb_u32(0, 255, 255), urgb_u32(0, 0, 0));
+                render_time = put_15_pixels_rgbw(columns[N_DISPLAY_COLUMNS-i-1], PIXEL_CHAR_COLOR, PIXEL_BG_COLOR);
 
             // sleep the remaining amount of column time
             sleep_us(col_display_time - render_time);

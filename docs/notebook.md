@@ -530,3 +530,11 @@ Currently, the plan is to devote two screws per wand. The selected screws are th
 ## 2024/04/08
 
 While it is an educationally enriching experience to learn to model and print 3D parts for this project, the requirement for a PCB mount could have, in hindsight, been completely avoided by simply having mounting holes on the PCB and screwing them straight into the dowel. If this project is continued after version 1, that will be one of the changes.
+
+## 2024/04/10
+
+RGBW leds are now functional. After testing, my eyes hurt and have after image spots as if I had looked at the sun. This means that the wand is probably bright enough now.
+
+---------------------
+
+While testing the wand at the UMaine hacekrspace, a group of people operating a radio picked up some pretty intense radio interference from the wand, that sounded pretty musical.
