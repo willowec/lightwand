@@ -538,3 +538,9 @@ RGBW leds are now functional. After testing, my eyes hurt and have after image s
 ---------------------
 
 While testing the wand at the UMaine hacekrspace, a group of people operating a radio picked up some pretty intense radio interference from the wand, that sounded pretty musical.
+
+## 2024/04/14
+
+Handle 3D model design:
+
+The handle has been designed to house the rocker switch. 75% of the height of the handle contains 75mm of the dowel shaft. For stability, two 1in screws will be drilled through the handle. The model contains no holes for these screws other than small sinks for the heads, as the current plan is to simply drill a guide and then screw them in. This simplifies the print and makes it less likely to fail.
