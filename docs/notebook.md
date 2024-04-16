@@ -544,3 +544,9 @@ While testing the wand at the UMaine hacekrspace, a group of people operating a 
 Handle 3D model design:
 
 The handle has been designed to house the rocker switch. 75% of the height of the handle contains 75mm of the dowel shaft. For stability, two 1in screws will be drilled through the handle. The model contains no holes for these screws other than small sinks for the heads, as the current plan is to simply drill a guide and then screw them in. This simplifies the print and makes it less likely to fail.
+
+-----------------------
+
+After printing, the overall design appears to be a success. However, the tolerances on the switch port were slightly too tight to allow the switch to be snapped in, and the tolerances on the dowel shaft were also too tight. That was able to be pounted in with a mallet, so it's not a big issue. The switch _is_ an issue though. The diameter of the sketch for it likely needs to be widened by 2mm.
+
+As for the screws that anchor the handle to the dowel, I purchest #8x1in metal sheet screws. These seem like they will work. However, the holes for the screws need to be drilled to the correct diameter.
