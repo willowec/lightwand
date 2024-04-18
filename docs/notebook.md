@@ -549,4 +549,11 @@ The handle has been designed to house the rocker switch. 75% of the height of th
 
 After printing, the overall design appears to be a success. However, the tolerances on the switch port were slightly too tight to allow the switch to be snapped in, and the tolerances on the dowel shaft were also too tight. That was able to be pounted in with a mallet, so it's not a big issue. The switch _is_ an issue though. The diameter of the sketch for it likely needs to be widened by 2mm.
 
-As for the screws that anchor the handle to the dowel, I purchest #8x1in metal sheet screws. These seem like they will work. However, the holes for the screws need to be drilled to the correct diameter.
+As for the screws that anchor the handle to the dowel, I purchased #8x1in metal sheet screws. These seem like they will work. However, the holes for the screws need to be drilled to the correct diameter.
+
+## 2024/04/18
+
+Further handle 3D model edits: The second print works well with the switches, perhaps even being slightly looser than it needs to now. However, it was printed at a very high infill, and now it is nearly impossible to pound the wooden dowel into the handle shaft. Widening this shaft by at least a millimeter will likely be very helpful, although going up to two millimeters may be viable as there will be two screws holding the shaft in place as well as friction.
+
+----------------
+In the end, it has been decided to make the shaft wider by 2cm.
