@@ -557,3 +557,14 @@ Further handle 3D model edits: The second print works well with the switches, pe
 
 ----------------
 In the end, it has been decided to make the shaft wider by 2cm.
+
+## 2024/04/23
+
+The printed circuit boards have arrived for the project, and a first attempt at soldering the surface mount components has been made. Solder paste was scraped onto the PCB, the components were plalced with tweezers, and then the PCB was baked in a toaster oven. The result is pictured below:
+
+![SMD attempt #1](./notebook_imgs/2024-04-23-SMDAttempt.png)
+
+It may be difficult to see in the image, but U3 is askew, and U1 has bridged solder joints. In order to fix them, we need to know if it is safe to use a hot air gun on these components. The solder paste used is the SMD291AX500T3, which has a melting point of 183C.
+
+- U1, the TPS61033: MSL rating Level-1-260C-UNLIM, means the IC can handle a peak reflow temperature of 260 degrees. It is safe to fix this component.
+- U3: 
