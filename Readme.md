@@ -4,12 +4,16 @@ A Persistance of Vision project for the University of Maine Electrical and Compu
 
 ## Compiling
 
-    git submodule update --init --recursive
-    mkdir build
-    cd build
-	export PICO_SDK_PATH=/path/to/pico/pico-sdk
-    cmake ..
-    make
+1. Open a linux environment
+2. Change directory to the directory of this Readme
+3. Run the following commands:
+
+        git submodule update --init --recursive
+        mkdir build
+        cd build
+	    export PICO_SDK_PATH=/path/to/pico/pico-sdk
+        cmake ..
+        make
 
 ## Credits
 
