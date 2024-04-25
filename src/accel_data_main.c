@@ -44,15 +44,15 @@ int main()
     }
     printf("Accelerometer setup complete...\n");  
 
-    int16_t ay_raw;
+    int16_t ax_raw;
     double accel_mss = 0;
 
     while (1) {
         // update raw adx reading
-        adxl343_gety(&accelerometer, &ay_raw);
+        adxl343_getx(&accelerometer, &ax_raw);
 
         // convert to acceleration in meters/s^2
-        accel_mss = (double)ay_raw * ADXL3XXVAL_TO_MSS;
+        accel_mss = (double)ax_raw * ADXL3XXVAL_TO_MSS;
 
         printf("%f,%d\n", accel_mss, time_us_64());
     }

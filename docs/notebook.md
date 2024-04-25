@@ -567,4 +567,12 @@ The printed circuit boards have arrived for the project, and a first attempt at 
 It may be difficult to see in the image, but U3 is askew, and U1 has bridged solder joints. In order to fix them, we need to know if it is safe to use a hot air gun on these components. The solder paste used is the SMD291AX500T3, which has a melting point of 183C.
 
 - U1, the TPS61033: MSL rating Level-1-260C-UNLIM, means the IC can handle a peak reflow temperature of 260 degrees. It is safe to fix this component.
-- U3: 
+- U3, the S82K1B: If the rating is listed on the datasheet, it is in chinese.
+
+---------------------------
+
+While the reflow was likely successful, it turns out that U1 was actually rotated 180 degrees. Instead of trying to fix the orientation again, a new pcb was populated, this time only with the boost converter circuit and through-hole components. Amazingly, the boost converter works!
+
+## 2024/04/23
+
+Now that a working PCB is assembled, the executables requesting accelerometer data from the ADX343 have been updated to use the correct axis.
