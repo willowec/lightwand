@@ -46,6 +46,10 @@ ALPHABET = {
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('font_path', type=Path, help="Path to the true type font (.tff) font to generate the light wand font from")
+    parser.add_argument('xoff', type=int, help="Character offset in X direction")
+    parser.add_argument('yoff', type=int, help="Character offset in Y direction")
+    parser.add_argument('font_size', type=int, help="Character font size")
+    parser.add_argument('--show', action='store_true', help="If set, this flag causes each character image to be shown during generation")
 
     args = parser.parse_args()
 
@@ -70,12 +74,18 @@ The lowest pixel on the wand is the LSB
         image = Image.new('L', size=(CHAR_WIDTH, CHAR_HEIGHT))
         draw = ImageDraw.Draw(image)
 
-        font = ImageFont.truetype(str(args.font_path), 18)
-        draw.text((2, -2), ALPHABET[char_name], font=font, fill=255)
+        font = ImageFont.truetype(str(args.font_path), args.font_size)
+        draw.text((args.xoff, args.yoff), ALPHABET[char_name], font=font, fill=255)
+
+        print(args.show)
+        if args.show:
+            image.show()
 
         # convert the image to a grayscale array of ones and zeroes.
         imarray = np.asarray(image) / 255
         imarray = np.around(imarray, decimals=0)
+        inverter = np.ones_like(imarray)
+        imarray = inverter - imarray
 
         print(imarray)
             

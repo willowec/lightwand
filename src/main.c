@@ -24,7 +24,7 @@ Main C file for the light wand project
 #define DIR_HYSTERESIS_MASK   0x00ffffff
 
 // defines relating to text display
-#define PIXEL_CHAR_COLOR        urgbw_u32(0, 0, 255, 255)
+#define PIXEL_CHAR_COLOR        urgbw_u32(0, 0, 255, 128)
 #define PIXEL_BG_COLOR          urgbw_u32(0, 0, 0, 0)   
 #define PIXEL_REST_COLOR        urgbw_u32(0, 0, 0, 0)
 
@@ -193,15 +193,15 @@ void core1_main(void)
 
             // index in the proper direction
             if (dir == 0)
-                render_time = put_15_pixels_rgbw(columns[i], PIXEL_CHAR_COLOR, PIXEL_BG_COLOR);
-            else
                 render_time = put_15_pixels_rgbw(columns[N_DISPLAY_COLUMNS-i-1], PIXEL_CHAR_COLOR, PIXEL_BG_COLOR);
+            else
+                render_time = put_15_pixels_rgbw(columns[i], PIXEL_CHAR_COLOR, PIXEL_BG_COLOR);
 
             // sleep the remaining amount of column time
             sleep_us(col_display_time - render_time);
         }
 
-        printf("finished %d/%d\n", i, N_DISPLAY_COLUMNS);
+        // printf("finished %d/%d\n", i, N_DISPLAY_COLUMNS);
     }
 
     free(columns);

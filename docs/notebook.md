@@ -576,3 +576,7 @@ While the reflow was likely successful, it turns out that U1 was actually rotate
 ## 2024/04/23
 
 Now that a working PCB is assembled, the executables requesting accelerometer data from the ADX343 have been updated to use the correct axis.
+
+## 2024/04/28
+
+Updated the alphabet generation code so that empty space behind the characters can be blank. The wand is now fully legible even in a lit room!
