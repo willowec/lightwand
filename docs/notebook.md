@@ -580,3 +580,7 @@ Now that a working PCB is assembled, the executables requesting accelerometer da
 ## 2024/04/28
 
 Updated the alphabet generation code so that empty space behind the characters can be blank. The wand is now fully legible even in a lit room!
+
+## 2024/04/30
+
+Added a push button connecting GPIO28 to +3v3 in order to allow the wand to switch display modes without reprogramming

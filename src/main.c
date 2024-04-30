@@ -14,8 +14,12 @@ Main C file for the light wand project
 #include "ADXL343.h"
 #include "alphabet.h"
 
+// misc defines
+#define BUTTON_DEBOUNCE_TIME_US    100000
+
 // gpio pin defines
 #define LED_PIN         25
+#define BUTTON_PIN      28
 #define ADX_SDA_PIN     16
 #define ADX_SCL_PIN     17
 
@@ -40,7 +44,16 @@ void core1_main(void);
 void core1_sio_irq(void);
 void signal_dirchange(uint64_t swing_time, uint64_t dir_hist);
 int build_columns(const uint32_t **message, int m_len, uint32_t *columns, int n_cols, int scale);
+void gpio_callback(uint gpio, uint32_t events);
 
+// display state
+enum State {
+    POV,
+    RANDOM,
+    GOBLUE
+};
+// volatile global state so that GPIO interrupts can change the state
+volatile enum State current_state;
 
 // Core 0 main handles wand position calculations
 int main() {
@@ -52,9 +65,9 @@ int main() {
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
     for (int i = 0; i < 5; i++) {
-        sleep_ms(250);
+        sleep_ms(50);
         gpio_put(LED_PIN, 1);
-        sleep_ms(250);
+        sleep_ms(50);
         gpio_put(LED_PIN, 0);
     }
 
@@ -72,6 +85,11 @@ int main() {
     put_15_pixels_on_rgbw(urgbw_u32(0, 255, 0, 128));
     printf("LED's lit green\n");
 
+    // set up the pushbutton
+    gpio_init(BUTTON_PIN);
+    gpio_set_irq_enabled_with_callback(BUTTON_PIN, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
+    gpio_pull_down(BUTTON_PIN);
+
     // Launch the second core
     multicore_launch_core1(core1_main);
 
@@ -86,7 +104,13 @@ int main() {
     uint64_t hidden_dir_hist = 0;  // lsb is current hidden direction
     uint64_t diplay_dir_hist = 0;  // lsb is current display direction.
 
+
     while(1) {   
+        if (current_state == POV)
+            printf("ya\n");
+        else if (current_state == RANDOM) printf("ye\n");
+        else (printf("...\n"));
+
         uint64_t now = time_us_64();
 
         // update raw adx reading
@@ -248,4 +272,12 @@ int build_columns(const uint32_t **message, int m_len, uint32_t *columns, int n_
     }
 
     return 0;
+}
+
+void gpio_callback(uint gpio, uint32_t events) {
+    static uint64_t last_pressed_us = 0;
+    if(gpio==BUTTON_PIN && (time_us_64() - last_pressed_us) > BUTTON_DEBOUNCE_TIME_US) {
+        current_state = (current_state + 1) % (GOBLUE + 1);
+        last_pressed_us = time_us_64();
+    }
 }
