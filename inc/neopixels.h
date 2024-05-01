@@ -5,6 +5,7 @@ Functions for controlling neopixel arrays
 #define NEOPIXEL
 
 #include "pico/stdlib.h"
+#include "pico/rand.h" 
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
 #include "ws2812.pio.h"
@@ -163,6 +164,27 @@ static inline uint64_t put_15_pixels_rgbw(uint32_t bits, uint32_t color_on, uint
     sleep_us(WS2812_END_SLEEP_US);
 
     return time_us_64() - start_us;
+}
+
+/*
+For a 15-count RGBW neopixel strip:
+spits random color data onto the wand (adjusted to be prettier)
+    white_mask is and-ed with the white channel of the random pixel color
+*/
+static inline uint64_t put_15_random_rgbw(uint8_t white_mask) {
+    uint64_t start_us = time_us_64();
+
+    for (int i = 0; i < 15; i++) {
+        pio_sm_put_blocking(pio0, 0, get_rand_32() & 0xFFFFFF00 | white_mask);
+    }
+
+    // wait for the tx fifo to drain
+    while (!pio_sm_is_tx_fifo_empty(pio0, 0))
+        sleep_us(1);
+        
+    sleep_us(WS2812_END_SLEEP_US);    
+
+    return time_us_64() - start_us; 
 }
 
 // taken from hutscape.github.io. Converts r, g, b, to urgb

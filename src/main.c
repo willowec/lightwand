@@ -15,7 +15,8 @@ Main C file for the light wand project
 #include "alphabet.h"
 
 // misc defines
-#define BUTTON_DEBOUNCE_TIME_US    100000
+#define BUTTON_DEBOUNCE_TIME_US     1000
+#define RAND_UPDATE_TIME_US         100000
 
 // gpio pin defines
 #define LED_PIN         25
@@ -49,8 +50,7 @@ void gpio_callback(uint gpio, uint32_t events);
 // display state
 enum State {
     POV,
-    RANDOM,
-    GOBLUE
+    RANDOM
 };
 // volatile global state so that GPIO interrupts can change the state
 volatile enum State current_state;
@@ -104,68 +104,79 @@ int main() {
     uint64_t hidden_dir_hist = 0;  // lsb is current hidden direction
     uint64_t diplay_dir_hist = 0;  // lsb is current display direction.
 
+    // variables relating to rand mode
+    uint64_t prev_rand_update_us = 0;
 
     while(1) {   
-        if (current_state == POV)
-            printf("ya\n");
-        else if (current_state == RANDOM) printf("ye\n");
-        else (printf("...\n"));
-
         uint64_t now = time_us_64();
 
         // update raw adx reading
         adxl343_getx(&accelerometer, &ax_raw);
 
-        // convert to acceleration in meters/s^2
-        accel_mss = (float)ax_raw * ADXL3XXVAL_TO_MSS;
+        // Logic for POV effect
+        if (current_state == POV)
+        {
+            gpio_put(LED_PIN, 0);
 
-        // calculate the jerk of the wand in meters/s^3
-        jerk_msss = (accel_mss - prev_accel_mss) / ((float)(now - prev_frame_time) / 1000000.0f);
-        
-        // caculate the direction of the wand based on jerk
-        if (jerk_msss < 0) {
-            // if jerk is negative, wand is moving 'left' (0)
-            hidden_dir_hist = (hidden_dir_hist << 1) | 0;
+            // convert to acceleration in meters/s^2
+            accel_mss = (float)ax_raw * ADXL3XXVAL_TO_MSS;
+
+            // calculate the jerk of the wand in meters/s^3
+            jerk_msss = (accel_mss - prev_accel_mss) / ((float)(now - prev_frame_time) / 1000000.0f);
+            
+            // caculate the direction of the wand based on jerk
+            if (jerk_msss < 0) {
+                // if jerk is negative, wand is moving 'left' (0)
+                hidden_dir_hist = (hidden_dir_hist << 1) | 0;
+            }
+            else if (jerk_msss > 0) {
+                // if jerk is positive, wand is moving 'right' (1)
+                hidden_dir_hist = (hidden_dir_hist << 1) | 1;
+            }
+            else {
+                // otherwise, assume wand is continuing in the same direction
+                i = hidden_dir_hist & 1;
+                hidden_dir_hist = (hidden_dir_hist << 1) | i;
+            }
+
+            // update the displayed direction based on the hidden direction, using hysteresis.
+            if (((hidden_dir_hist & DIR_HYSTERESIS_MASK) == 0) && ((diplay_dir_hist & 1) == 1)) {
+                // all previous hidden directions in DIR_HYSTERESIS_MASK were '0' - set display direction to 0
+                diplay_dir_hist = (diplay_dir_hist << 1) | 0;
+
+                // the direction of the wand has changed - update the amount of time the swing that just ended took
+                prev_swing_time_length = now - prev_dir_change_time;
+                prev_dir_change_time = now;
+
+                signal_dirchange(prev_swing_time_length, diplay_dir_hist);
+            }
+            else if (((hidden_dir_hist & DIR_HYSTERESIS_MASK) == DIR_HYSTERESIS_MASK) && ((diplay_dir_hist & 1) == 0)) {
+                // all previous hidden directions in DIR_HYSTERESIS_MASK were '1' - set display direction to 1
+                diplay_dir_hist = (diplay_dir_hist << 1) | 1;
+
+                // the direction of the wand has changed - update the amount of time the swing that just ended took
+                prev_swing_time_length = now - prev_dir_change_time;
+                prev_dir_change_time = now;
+
+                signal_dirchange(prev_swing_time_length, diplay_dir_hist);
+            }
+            else {
+                // If there is no cause to change the display direction, just set it to the previous direction
+                i = diplay_dir_hist & 1;
+                diplay_dir_hist = (diplay_dir_hist << 1) | i;
+            }
+
+            prev_accel_mss = accel_mss;
+            prev_frame_time = now;
         }
-        else if (jerk_msss > 0) {
-            // if jerk is positive, wand is moving 'right' (1)
-            hidden_dir_hist = (hidden_dir_hist << 1) | 1;
-        }
-        else {
-            // otherwise, assume wand is continuing in the same direction
-            i = hidden_dir_hist & 1;
-            hidden_dir_hist = (hidden_dir_hist << 1) | i;
-        }
-
-        // update the displayed direction based on the hidden direction, using hysteresis.
-        if (((hidden_dir_hist & DIR_HYSTERESIS_MASK) == 0) && ((diplay_dir_hist & 1) == 1)) {
-            // all previous hidden directions in DIR_HYSTERESIS_MASK were '0' - set display direction to 0
-            diplay_dir_hist = (diplay_dir_hist << 1) | 0;
-
-            // the direction of the wand has changed - update the amount of time the swing that just ended took
-            prev_swing_time_length = now - prev_dir_change_time;
-            prev_dir_change_time = now;
-
-            signal_dirchange(prev_swing_time_length, diplay_dir_hist);
-        }
-        else if (((hidden_dir_hist & DIR_HYSTERESIS_MASK) == DIR_HYSTERESIS_MASK) && ((diplay_dir_hist & 1) == 0)) {
-            // all previous hidden directions in DIR_HYSTERESIS_MASK were '1' - set display direction to 1
-            diplay_dir_hist = (diplay_dir_hist << 1) | 1;
-
-            // the direction of the wand has changed - update the amount of time the swing that just ended took
-            prev_swing_time_length = now - prev_dir_change_time;
-            prev_dir_change_time = now;
-
-            signal_dirchange(prev_swing_time_length, diplay_dir_hist);
-        }
-        else {
-            // If there is no cause to change the display direction, just set it to the previous direction
-            i = diplay_dir_hist & 1;
-            diplay_dir_hist = (diplay_dir_hist << 1) | i;
-        }
-
-        prev_accel_mss = accel_mss;
-        prev_frame_time = now;
+        // Logic for random display
+        else if (current_state == RANDOM) {
+            gpio_put(LED_PIN, 1);
+            if (prev_rand_update_us + RAND_UPDATE_TIME_US < now) {
+                put_15_random_rgbw(abs(ax_raw));
+                prev_rand_update_us = time_us_64();
+            }
+        } 
     } 
 
     return 1;
@@ -197,7 +208,6 @@ void core1_main(void)
         // now that something is on the fifo, pop it all off
         while (multicore_fifo_rvalid())
             fifo_val = multicore_fifo_pop_blocking();
-
 
         // extract the prev swing length from the fifo value
         prev_swing_length = (uint64_t)(fifo_val & ~(1 << 31));
@@ -277,7 +287,7 @@ int build_columns(const uint32_t **message, int m_len, uint32_t *columns, int n_
 void gpio_callback(uint gpio, uint32_t events) {
     static uint64_t last_pressed_us = 0;
     if(gpio==BUTTON_PIN && (time_us_64() - last_pressed_us) > BUTTON_DEBOUNCE_TIME_US) {
-        current_state = (current_state + 1) % (GOBLUE + 1);
+        current_state = (current_state + 1) % (RANDOM + 1);
         last_pressed_us = time_us_64();
     }
 }

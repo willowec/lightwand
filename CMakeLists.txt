@@ -39,6 +39,7 @@ target_link_libraries(${PROJECT_NAME}
   hardware_pio
   hardware_i2c
   pico_multicore
+  pico_rand
 )
 
 # enable usb communication
