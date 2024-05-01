@@ -1,7 +1,7 @@
 # Notebook
 This document contains notes taken during the design of the software and circuitry of the Light Wand project.
 
-## 2024/02/17
+# 2024/02/17
 
 Testing what acceleration level needs to be selected on the ADXL343 for rapidly waving the stick to not max it out.
 
@@ -11,7 +11,7 @@ Testing what acceleration level needs to be selected on the ADXL343 for rapidly 
 
 Because 8G maxxes out, it looks like we will need to use the 16G setting. However, it is not impossible that the 8G setting will turn out to be a better fit. When waving the stick at more reasonable speeds, the 16G max value was more like 200
 
-## 2024/02/18
+# 2024/02/18
 
 ### Boost Converter Component selection
 
@@ -52,7 +52,7 @@ Page 22 of the datasheet contains a typical circuit example. Other than resistor
  - 2N7000 transistor (have on hand)
  - passive components (have on hand)
 
-## 2024/02/21
+# 2024/02/21
 
 ### Calculations for acquiring the position of the wand in space using the accelerometer
 
@@ -63,13 +63,13 @@ In order to accurately see how far the wand has moved, there are two options as 
 
 it would be prudent to try both.
 
-## 2024/02/22
+# 2024/02/22
 
 Both versions of the software have been attempted now, and while not bothering with 3D space proved to be closer to a reasonable result, it is still wildly innacurate and off-base. Perhaps it would be better to use the accelerometer simply to detect when the wand is being moved, and wether it is being moved left or right, and then display the text at a hard-coded speed. That seems to be what most Persistance of Vision wands do, anyway. [This hackaday project](https://hackaday.com/2018/08/31/max1000-tutorial-is-quite-persistent/) only bothers to detect the max G's that occur when you switch direction.
 
 [The POV Staff](https://github.com/shurik179/povstaff) seems like it might be a bit more sophisticated. From the user guide, "As soon as rotation speed is high enough, the staff will begin showing your first image, one line at a time, and will continue doing that as long as you are twirling the staff. It will adjust the interval between successive lines depending on the rotation speed, to keep the image ratio close to original regardless of how fast you are rotating the staff". They use the LSM6DS33, which is a 3-axis gyro + 3-axis accelerometer. The gyroscope is also how they find the rotational speed of the staff, and since it is fairly expensive I think this is more or less off the table for now.
 
-## 2024/03/01
+# 2024/03/01
 
 When waved at extreme speeds, the wand can now display about onen character at a time in the afterimage. This is not what we are really going for. We need at least three characters to be displayed simultaneously. In order to reach this goal, we need to make it easier to wave the wand at high speeds. Some possible changes:
 
@@ -88,7 +88,7 @@ When waved at extreme speeds, the wand can now display about onen character at a
 
 From this little set of bullet points, it would seem that the best course of action is to reduce the wand from 30 pixels to 15 pixels. This would reduce the unit price, make them much easier to use (less tiring on the arms), increase their battery life, make them safer, etc etc.
 
-## 2024/03/04
+# 2024/03/04
 
 ### Software issue
 
@@ -102,13 +102,13 @@ $$R_1 = R_2 * (\frac{V_{OUT}}{1.262} - 1)$$
 
 In their example schematic, both $R_1$ and $R_2$ are on the order of 10k - 100k, so we will follow suit here. As $V_f$ of our shottky diode is 0.55V typical, we want $V_{OUT} = 5.55$. After some trial and error, it was found that with $R_1 = 15k\Omega$ and $R_2 = 51k\Omega$, the output of the boost converter would be $V_{OUT} = 5.5528V$, and after the boost converter a voltage of $V_{SYS} = 5.0028V$ would be supplied to the rest of the circuit.
 
-## 2024/03/05
+# 2024/03/05
 
 ### Software issue resolved
 
 (it was a hardware issue). The ADXL343 placed on the protoboard has not been salvaged yet, but the issuw was the spare was simply a bad solder connection between Vin and the rest of the board.
 
-## 2024/03/08
+# 2024/03/08
 
 ### Testing the Boost Converter
 
@@ -139,7 +139,7 @@ This indicates that the boost converter will be more or less unable to support t
 
 The wand has been rebuilt in its 15 LED form on a light, flexible fiberglass rod. This allows it to be waved much faster and more easily than previously. However, the results are still extremely unsatisfactory. In a well lit room, the POV effect is not strong enough for onlookers to make out what is being spelled. The same goes for video recordings of the effect. It still needs to be tested in a dark room, however.
 
-## 2024/03/09
+# 2024/03/09
 
 ### Component Selection for the S-82K1B battery protection IC
 
@@ -167,7 +167,7 @@ According to the datasheet, the MOSFETS should have a threshold voltage that is 
 
 The [SI3900DV-T1-E3](https://www.digikey.com/en/products/detail/vishay-siliconix/SI3900DV-T1-E3/1656399) ([datasheet](ttps://www.vishay.com/docs/71178/si3900dv.pdf)) seems like a good choice for the mosfets. Relatively hand solderable at 1mm pitch, $0.7 a piece, with $V_{GS(th)} = 0.6V$ to $1.5V$. In worst case conditions they can handle continuous $I_{DS} = 1.8A$, and since only 15 LEDS are being used at this stage of the design, that is more than enough current capacity.
 
-## 2024/03/18
+# 2024/03/18
 
 ### PCB - Pico or RP2040?
 
@@ -190,7 +190,7 @@ In order to reduce complexity of the design, avoiding potential unexpected roadb
 
 [This helpful KiCad library](https://github.com/ncarandini/KiCad-RP-Pico) for the Pico will be used in the PCB layout. 
 
-## 2024/03/19
+# 2024/03/19
 
 ### Boost Converter Testing
 
@@ -284,7 +284,7 @@ The closest reasonable capacitor value is $C_3 = 820pF$
 
 The datasheet recommends $C_1 = 10\mu F$
 
-## 2024/03/21
+# 2024/03/21
 
 ### Power draw test
 
@@ -302,7 +302,7 @@ When it comes to low brightness (rgb(1, 1, 1)) the results are unsurprising:
 - At 5V, with all led's set to min-bright white, the system draws 5V * 0.03A = 0.15W
 - At 3V, with all led's set to min-bright white, the system draws 3V * 0.03A = 0.09W
 
-## 2024/03/25
+# 2024/03/25
 
 ### PCB ordering
 
@@ -314,7 +314,7 @@ So, keeping in battery protection increases unit price by $3.50.
 
 This is not including the price for physical materials, like a 3D printed case or a rod for the led strips to mount to. It also excludes the unit price of the 18650 batteries and their holders. The batteries were $7.49 each, and the holders were $0.83 each. Assuming an additional $5 for physical materials (PCB, dowel), the total unit price for each wand is ~$33.17
 
-## 2024/05/26
+# 2024/05/26
 
 ### Revisiting wand position
 
@@ -322,7 +322,7 @@ After watching this video [Simple pendulum animation](https://www.youtube.com/wa
 
 In practice, this did not work out. The system's framerate may be too slow due to the main loop being blocked by LED communications each frame. This should be investigated
 
-## 2024/05/27
+# 2024/05/27
 
 ### LED reselection
 
@@ -382,7 +382,7 @@ For 10uF, the output ripple is $V_{RIPPLE} = \frac{1.3A * .6}{2MHz * 10uF} = 39m
 
 According to the datasheet, "If not used, the PG pin can be left floating or connected to GND". Since PG seems optional, we will ground the pin
 
-## 2024/04/01
+# 2024/04/01
 
 After beginning work on a python tool to plot the accelerometer data in order to get a better model of the wand's position in space, I made the embarassing realisation that since I re-built the wand, the Z-axis is no longer the axis of motion for the wand. For the current prototype, the Y-axis should be used. For the current PCB design, the X-acis should be used. It may be prudent to add this as a compilation option in the CMakeLists.txt file.
 
@@ -415,14 +415,14 @@ Now that we have a good method for finding the direction the wand travels in, th
 
 After implementing this new system on the wand and testing by lighting the wand red for left (dir = 0) and green for right (dir = 1), the wand direction appears to be very well characterized. The next step is to calculate the period of the wand's motion and update that every cycle.
 
-## 2024/04/01
+# 2024/04/01
 ### Period calculation and keeping the image static
 
 The current goal is to get the wand to display a vertical bar at the middle of its swing, and minimize the amount that bar moves from swing to swing. Initial testing shows that the average length of casual but firm one-handed swing is around .45 seconds, and around 350 iterations through the main while loop occur during this time.
 
 Rick Eason recommended that the display be handled by clock division interrupt. Because this system is dual-core however, it may be better to simply have a separate while loop on core 1 that handles the LED display. By making put_15_pixels_on() and put_15_pixels() return the amount of microseconds slept during their run, we can simply wait $\frac{swinglen}{N_{updates}} - pixeltime$ microseconds every loop.
 
-## 2024/04/04
+# 2024/04/04
 ### Debugging wand display
 
 After implementing the period calculation using the method outlined above, the result is not exactly what one would want. It seems like the columns are almost never being finished in a swing. To get a closer look, I added a printf after each swing to find out how many columns were actually rendered in that swing.
@@ -468,7 +468,7 @@ finished 256/256
 
 From this test, we can see that the software actually can't keep up with a two-handed swong. This might not be such a bad thing - waving the wand as fast as possible makes the weilder look rather silly, and also puts quite a bit of strain on the wrists. Hopefully, with brighter LED's the slower swing speed will be sufficient.
 
-## 2024/04/07
+# 2024/04/07
 ### Case Design (3D print)
 
 In order to house the electronics and make a grip for the user to hold the wand, a 3D printed case and/or handle should be designed. There are two main options here:
@@ -527,11 +527,11 @@ The case needs to house the rocker switch, populated PCB, and battery holder. Th
 
 Currently, the plan is to devote two screws per wand. The selected screws are the following product: [Hillman #2 x 1/4-in Brass Interior Wood Screws (12-Per Box)](https://www.lowes.com/pd/Hillman-2-x-1-4-in-Gold-Brass-Round-Interior-Exterior-Wood-Screws-12-Count/3011870). They have a shaft diameter of 2mm and a length of 6.4mm
 
-## 2024/04/08
+# 2024/04/08
 
 While it is an educationally enriching experience to learn to model and print 3D parts for this project, the requirement for a PCB mount could have, in hindsight, been completely avoided by simply having mounting holes on the PCB and screwing them straight into the dowel. If this project is continued after version 1, that will be one of the changes.
 
-## 2024/04/10
+# 2024/04/10
 
 RGBW leds are now functional. After testing, my eyes hurt and have after image spots as if I had looked at the sun. This means that the wand is probably bright enough now.
 
@@ -539,7 +539,7 @@ RGBW leds are now functional. After testing, my eyes hurt and have after image s
 
 While testing the wand at the UMaine hacekrspace, a group of people operating a radio picked up some pretty intense radio interference from the wand, that sounded pretty musical.
 
-## 2024/04/14
+# 2024/04/14
 
 Handle 3D model design:
 
@@ -551,14 +551,14 @@ After printing, the overall design appears to be a success. However, the toleran
 
 As for the screws that anchor the handle to the dowel, I purchased #8x1in metal sheet screws. These seem like they will work. However, the holes for the screws need to be drilled to the correct diameter.
 
-## 2024/04/18
+# 2024/04/18
 
 Further handle 3D model edits: The second print works well with the switches, perhaps even being slightly looser than it needs to now. However, it was printed at a very high infill, and now it is nearly impossible to pound the wooden dowel into the handle shaft. Widening this shaft by at least a millimeter will likely be very helpful, although going up to two millimeters may be viable as there will be two screws holding the shaft in place as well as friction.
 
 ----------------
 In the end, it has been decided to make the shaft wider by 2cm.
 
-## 2024/04/23
+# 2024/04/23
 
 The printed circuit boards have arrived for the project, and a first attempt at soldering the surface mount components has been made. Solder paste was scraped onto the PCB, the components were plalced with tweezers, and then the PCB was baked in a toaster oven. The result is pictured below:
 
@@ -573,14 +573,34 @@ It may be difficult to see in the image, but U3 is askew, and U1 has bridged sol
 
 While the reflow was likely successful, it turns out that U1 was actually rotated 180 degrees. Instead of trying to fix the orientation again, a new pcb was populated, this time only with the boost converter circuit and through-hole components. Amazingly, the boost converter works!
 
-## 2024/04/23
+# 2024/04/23
 
 Now that a working PCB is assembled, the executables requesting accelerometer data from the ADX343 have been updated to use the correct axis.
 
-## 2024/04/28
+# 2024/04/28
 
 Updated the alphabet generation code so that empty space behind the characters can be blank. The wand is now fully legible even in a lit room!
 
-## 2024/04/30
+# 2024/04/30
 
 Added a push button connecting GPIO28 to +3v3 in order to allow the wand to switch display modes without reprogramming
+
+## Future Work
+
+With active development on this project coming to a close, there are a lot of areas that could be greatly improved.
+
+1. Boost converter circuit
+	
+	While the boost converter does its job, there is no discussion in the datasheet for the TPS61033DRLR boost converter about how it handles being back-driven, aka having 5V from USB on its output and a floating voltage on its input. While so far there has been no noticable damage to the IC due to plugging the wand into USB power when programming, it would be wise to add a protection diode so that this never becomes an issue.
+
+2. Battery protection circuit
+
+	The battery protection circuit was never tested as the IC used was too small for me to effectively solder without damaging it. In the future, using a protection IC that comes in a more convenient package would be wise. Additionally, it might not be too difficult to make the devices rechargable.
+
+3. PCB layout
+
+	The PCB was sized to be as small as possible, with no real consideration for how it could be mounted to the wands. Adding two standoff holes to act as attachment points for wood screws to go through would greatly improve the physical quality of the devices
+
+4. Display software
+
+	While the timing capabilities of the wand are pretty good at this point, it is currently only able to display text in 1-bit color. Modifying the wand to render images in color instead of text would allow for much more freedom in the display.
