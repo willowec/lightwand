@@ -7,7 +7,7 @@ import numpy as np
 import argparse
 
 SOURCE_DIR = Path("./alphabet_source")
-CHAR_WIDTH = 11
+CHAR_WIDTH = 15
 CHAR_HEIGHT = 15
 
 ALPHABET = {
