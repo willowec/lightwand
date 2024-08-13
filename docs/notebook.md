@@ -1,5 +1,11 @@
 # Notebook
+Author: Willow Cunningham.
+
 This document contains notes taken during the design of the software and circuitry of the Light Wand project.
+
+Please note that these notes have not been edited and more or less follow my actual development process - 
+that is to say, there are a ton of novice mistakes (many involving the boost converter design). Please don't 
+treat this document as a guide, it is just a log of my thought process.
 
 # 2024/02/17
 
